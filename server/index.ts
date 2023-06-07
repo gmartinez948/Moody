@@ -32,14 +32,15 @@ app.get("/login", (req, res) => {
     client_id: CLIENT_ID,
     response_type: "code",
     redirect_uri: REDIRECT_URI,
-    state: state,
-    scope: scope,
+    state,
+    scope,
   });
   res.redirect(`https://accounts.spotify.com/authorize?${queryParams}`);
 });
 
 app.get("/callback", (req, res) => {
   const code = req.query.code || null;
+  console.log(code, "code");
   axios({
     method: "post",
     url: "https://accounts.spotify.com/api/token",
@@ -56,6 +57,7 @@ app.get("/callback", (req, res) => {
     },
   })
     .then((response) => {
+      console.log(response.status, "status");
       if (response.status === 200) {
         const { refresh_token } = response.data;
         axios
@@ -66,6 +68,7 @@ app.get("/callback", (req, res) => {
             res.send(`<pre>${JSON.stringify(response.data, null, 2)}</pre>`);
           })
           .catch((error) => {
+            console.log(error);
             res.send(error);
           });
       } else {
@@ -85,6 +88,7 @@ app.get("/refresh_token", (req, res) => {
     data: querystring.stringify({
       grant_type: "refresh_token",
       refresh_token: refresh_token,
+      client_id: CLIENT_ID,
     }),
     headers: {
       "content-type": "application/x-www-form-urlencoded",
