@@ -9,7 +9,7 @@ function App() {
   const [token, setToken] = useState("");
 
   const signInsSpotify = () => {
-    return window.location.replace("http://localhost:80/login");
+    window.location.replace("http://localhost:80/login");
   };
 
   return (

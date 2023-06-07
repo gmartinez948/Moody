@@ -40,7 +40,6 @@ app.get("/login", (req, res) => {
 
 app.get("/callback", (req, res) => {
   const code = req.query.code || null;
-  console.log(code, "code");
   axios({
     method: "post",
     url: "https://accounts.spotify.com/api/token",
@@ -65,7 +64,7 @@ app.get("/callback", (req, res) => {
             `http://localhost:80/refresh_token?refresh_token=${refresh_token}`
           )
           .then((response) => {
-            res.send(`<pre>${JSON.stringify(response.data, null, 2)}</pre>`);
+            res.json(response.data.access_token);
           })
           .catch((error) => {
             console.log(error);
