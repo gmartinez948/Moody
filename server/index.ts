@@ -4,6 +4,9 @@ const express = require("express");
 const querystring = require("querystring");
 const port = 80;
 const app = express();
+const cors = require("cors");
+app.use(express.urlencoded({ extended: true }));
+app.use(cors());
 
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
@@ -37,7 +40,6 @@ app.get("/login", (req, res) => {
 
 app.get("/callback", (req, res) => {
   const code = req.query.code || null;
-
   axios({
     method: "post",
     url: "https://accounts.spotify.com/api/token",
