@@ -1,21 +1,23 @@
-import React, { useEffect, useState } from "react";
-import Navbar from "./components/Navbar";
-import axios from "axios";
-
-const CLIENT_ID = process.env.CLIENT_ID;
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useState,
+} from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import LandingPage from "./components/LandingPage";
+import Moods from "./components/Moods";
 
 function App() {
-  const [login, setLogin] = useState(false);
-  const [token, setToken] = useState("");
-
-  const signInsSpotify = () => {
-    window.location.replace("http://localhost:80/login");
-  };
-
   return (
     <div>
-      <button onClick={() => signInsSpotify()}>SIGN IN</button>
-      <Navbar />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/moody/" element={<Moods />} />
+        </Routes>
+      </BrowserRouter>
     </div>
   );
 }

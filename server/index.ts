@@ -7,6 +7,7 @@ const app = express();
 const cors = require("cors");
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
+let access_token = "something";
 
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
@@ -49,7 +50,6 @@ app.get("/login", (req, res) => {
 
 app.get("/callback/", (req, res) => {
   var code = req.query.code;
-
   axios({
     method: "post",
     url: "https://accounts.spotify.com/api/token",
@@ -67,7 +67,7 @@ app.get("/callback/", (req, res) => {
   })
     .then((response) => {
       if (response.status === 200) {
-        global.access_token = response.data.access_token;
+        access_token = response.data.access_token;
         res.redirect("http://localhost:3000/moody/");
       }
     })
@@ -75,8 +75,8 @@ app.get("/callback/", (req, res) => {
 });
 
 app.get("/auth/token", (req, res) => {
-  res.json({
-    access_token: global.access_token,
+  return res.json({
+    access_token: access_token,
   });
 });
 
