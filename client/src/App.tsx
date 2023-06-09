@@ -11,7 +11,7 @@ import Moods from "./components/Moods";
 
 function App() {
   return (
-    <div>
+    <div className="App">
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<LandingPage />} />

@@ -1,0 +1,176 @@
+/* In your CSS file */
+@import url("https://fonts.googleapis.com/css2?family=Pacifico&display=swap");
+
+/* Rest of your CSS code */
+
+/* Reset some default styles to ensure consistency across browsers */
+html,
+body,
+div,
+span,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+a,
+img,
+ul,
+li {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+/* Apply box-sizing border-box to all elements for easier layout calculations */
+* {
+  box-sizing: border-box;
+}
+
+/* Set a default font family and size */
+body {
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+}
+
+/* Add some padding and a background color to the body for spacing and readability */
+body {
+  padding: 20px;
+  background-color: black;
+  color: black;
+}
+
+.Landing-Page-Container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.Landing-Page-Container > h1 {
+  font-size: 50px;
+  font-family: "Pacifico", cursive;
+}
+
+.Landing-Page-Container > p {
+  font-size: 25px;
+}
+
+.Landing-Page-Container.Landing-Page-Content {
+  width: 80%;
+  max-width: 400px;
+  color: white;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.Landing-Page-Container.Landing-Page-Content > button {
+  width: 12.5em;
+  height: 5em;
+  border-radius: 50px;
+  cursor: pointer;
+  color: black;
+  background: #ffa500;
+  font-size: 20px;
+  font-weight: bold;
+  border: none;
+  transition: background 1s ease-in-out;
+}
+
+.genre-bubble-container {
+  width: 50%;
+  max-height: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+  column-gap: 120px;
+  row-gap: 20px;
+  /* grid-template-rows: repeat(1, 1fr); */
+  align-items: center;
+}
+
+.genre-page-container {
+  width: 100%;
+  margin-top: 10%;
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  row-gap: 50px;
+  justify-content: space-between;
+  justify-content: center;
+  align-items: center;
+  color: white;
+}
+
+/* h1 {
+  height: 20vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+} */
+
+.genre-page-container > h1 {
+  font-size: 2em;
+  text-align: center;
+}
+.genre-bubble-container > button {
+  font-size: medium;
+  font-weight: bold;
+  justify-self: center;
+  width: 150px;
+  height: 50px;
+  border-radius: 50px;
+  cursor: pointer;
+  text-align: center;
+  border: none;
+}
+
+/*  */
+/* Apply responsive styles for different screen sizes */
+/* Mobile-first approach */
+/* Styles for small screens (up to 600px) */
+@media (max-width: 600px) {
+  /* Adjust font size for smaller screens */
+  body {
+    font-size: 14px;
+  }
+
+  /* .genre-bubble-container {
+    grid-template-rows: repeat(auto, 1fr);
+    grid-template-columns: repeat(auto, 1fr);
+  } */
+  /* Example: Adjust layout or styling for smaller screens */
+  /* .example-class {
+       styles specific to smaller screens;
+   } */
+}
+
+/* Styles for medium screens (601px to 1024px) */
+@media (min-width: 601px) and (max-width: 1024px) {
+  /* Example: Adjust layout or styling for medium screens */
+  /* .example-class {
+       styles specific to medium screens;
+   } */
+}
+
+/* Styles for larger screens (1025px and above) */
+@media (min-width: 1025px) {
+  /* Example: Adjust layout or styling for larger screens */
+  /* .example-class {
+       styles specific to larger screens;
+   } */
+}
