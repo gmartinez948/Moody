@@ -38,8 +38,7 @@ const LandingPage = () => {
       <div className="Landing-Page-Container Landing-Page-Content">
         <h1>Moody</h1>
         <p>
-          Looking for music inspiration based on your mood? You're in the right
-          place!
+          Looking for music inspiration based on your mood? Let's get started!
         </p>
         <motion.button
           whileHover={{ scale: 1.1, transition: { duration: 0.5 } }}

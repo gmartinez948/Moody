@@ -1,8 +1,10 @@
 /* In your CSS file */
 @import url("https://fonts.googleapis.com/css2?family=Pacifico&display=swap");
 
-/* Rest of your CSS code */
+@import url("https://fonts.googleapis.com/css2?family=Oswald&display=swap");
 
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap");
+/* Rest of your CSS code */
 /* Reset some default styles to ensure consistency across browsers */
 html,
 body,
@@ -36,6 +38,7 @@ li {
 body {
   font-family: Arial, sans-serif;
   font-size: 16px;
+  place-items: center;
 }
 
 /* Add some padding and a background color to the body for spacing and readability */
@@ -54,12 +57,14 @@ body {
 }
 
 .Landing-Page-Container > h1 {
-  font-size: 50px;
+  font-size: 4.5em;
   font-family: "Pacifico", cursive;
 }
 
 .Landing-Page-Container > p {
-  font-size: 25px;
+  font-family: "Oswald";
+  font-weight: 500;
+  font-size: 1.5em;
 }
 
 .Landing-Page-Container.Landing-Page-Content {
@@ -76,14 +81,14 @@ body {
 }
 
 .Landing-Page-Container.Landing-Page-Content > button {
-  width: 12.5em;
-  height: 5em;
+  font-family: "Oswald";
+  width: 10em;
+  height: 4em;
   border-radius: 50px;
   cursor: pointer;
   color: black;
   background: #ffa500;
-  font-size: 20px;
-  font-weight: bold;
+  font-size: 1.5em;
   border: none;
   transition: background 1s ease-in-out;
 }
@@ -95,7 +100,6 @@ body {
   grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
   column-gap: 120px;
   row-gap: 20px;
-  /* grid-template-rows: repeat(1, 1fr); */
   align-items: center;
 }
 
@@ -115,20 +119,30 @@ body {
   color: white;
 }
 
-/* h1 {
-  height: 20vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: white;
-} */
-
 .genre-page-container > h1 {
   font-size: 2em;
   text-align: center;
+  font-family: "Playfair Display";
+  font-weight: bold;
+}
+
+.genre-page-container > button {
+  font-size: medium;
+  font-family: "Oswald";
+  color: black;
+  font-weight: bold;
+  justify-self: center;
+  width: 150px;
+  height: 50px;
+  border-radius: 20px;
+  cursor: pointer;
+  text-align: center;
+  border: none;
 }
 .genre-bubble-container > button {
   font-size: medium;
+  font-family: "Oswald", Regular 400;
+  color: black;
   font-weight: bold;
   justify-self: center;
   width: 150px;
@@ -137,6 +151,21 @@ body {
   cursor: pointer;
   text-align: center;
   border: none;
+}
+
+.Mood-Slider-Box {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  width: 800px;
+  gap: 50px;
+  margin-top: 75px;
+}
+
+.Mood-Slider-Box > h1 {
+  font-family: "Oswald";
+  font-size: 3em;
 }
 
 /*  */

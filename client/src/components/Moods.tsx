@@ -1,119 +1,95 @@
-import * as React from "react";
-import Box from "@mui/material/Box";
-import Slider from "@mui/material/Slider";
-import axios from "axios";
-import { getAuthToken, getTrack } from "../hooks/getAuthToken";
-import { useEffect, useMemo, useState } from "react";
 import "../App.css";
-import { motion, useAnimation } from "framer-motion";
-import { useRef } from "react";
+import Playlist from "./Playlist";
+import { Slider, ThemeProvider, createTheme } from "@mui/material";
+import { useState } from "react";
 
-const genres: string[] = [
-  "Pop",
-  "Hip-Hop",
-  "Rock",
-  "R&B/Soul",
-  "Indie",
-  "Electronic/Dance",
-  "Alternative",
-  "Country",
-  "Reggae",
-  "Jazz",
-  "Classical",
-  "Folk",
-  "Metal",
-  "Punk",
-  "Latin",
-  "K-Pop",
-  "Blues",
-  "Funk",
-  "Gospel",
-  "World",
+const marks = [
+  {
+    value: 1,
+    label: "Sad",
+  },
+  {
+    value: 25,
+    label: "Calm",
+  },
+  {
+    value: 50,
+    label: "Happy",
+  },
+  {
+    value: 75,
+    label: "Energetic",
+  },
+  {
+    value: 100,
+    label: "Motivated",
+  },
 ];
 
-const colors = [
-  "#D86F68", // terracota pink
-  "#E97451", // gold
-  "#FFDB58", // mustard
-  "#556B2F", // papaya
-  "#B7410E", // rust
-  "#FFBF00", // amber
-  "#E2725B", // peach,
-  "#FFDB58", // coral
-];
+const theme = createTheme({
+  components: {
+    MuiSlider: {
+      styleOverrides: {
+        thumb: {
+          color: "white",
+        },
+        track: {
+          color: "orange",
+        },
+        rail: {
+          color: "gray",
+        },
+        markLabel: {
+          color: "white",
+        },
+        root: {
+          width: "50%",
+        },
+      },
+    },
+  },
+});
 
-const Moods = () => {
-  const [selectedGenres, setSelectedGenres] = useState<never | string[]>([]);
-  const [genreCount, setGenreCount] = useState(0);
-  const [buttonBorder, setButtonBorder] = useState("none");
+const valuetext = (value: number) => {
+  return `${value}`;
+};
 
-  const handleGenreClick = (genre: string) => {
-    if (!selectedGenres.includes(genre.toLowerCase()) && genreCount < 5) {
-      let copyOfSelectedGenres = [...selectedGenres];
-      copyOfSelectedGenres.push(genre.toLowerCase());
-      setSelectedGenres(copyOfSelectedGenres);
-      setGenreCount((prev) => prev + 1);
-    } else {
-      setSelectedGenres(
-        selectedGenres.filter(
-          (g) => g.toLocaleLowerCase() !== genre.toLowerCase()
-        )
-      );
-      if (genreCount > 0) {
-        setGenreCount((prev) => prev - 1);
-      }
+const Moods = ({ genres }: { genres: string[] }) => {
+  const [sliderValue, setSliderValue] = useState<number>(0);
+  const [submitClicked, setSubmitClicked] = useState(false);
+
+  const handleSliderChange = (event: Event, newValue: number | number[]) => {
+    event.preventDefault();
+    if (typeof newValue === "number") {
+      setSliderValue(newValue);
     }
   };
 
-  const getRelatedArtists = () => {
-    axios
-      .get("http://localhost:80/recs/")
-      .then(({ data }) => {
-        console.log(data);
-      })
-      .catch((error) => console.log(error));
-  };
-  const getRecommendations = () => {
-    axios
-      .get("http://localhost:80/recommendations/")
-      .then(({ data }) => console.log(data.tracks))
-      .catch((error) => console.log(error));
-  };
-  const getRandomColor = (colors: string[]) => {
-    const randomIndex = Math.floor(Math.random() * colors.length);
-    return colors[randomIndex];
-  };
-
-  console.log(genreCount, "count");
-
-  console.log(`${Math.floor(Math.random() * colors.length)}`);
-
   return (
-    <div className="genre-page-container">
-      <h1>
-        Let's get to know your taste
-        <br />
-        Choose 5 genres
-      </h1>
-      <div className="genre-bubble-container">
-        {genres.map((genre) => {
-          return (
-            <motion.button
-              style={{
-                backgroundColor: `${getRandomColor(colors)}`,
-                border: selectedGenres.includes(genre.toLowerCase())
-                  ? "5px solid #00FF00"
-                  : "none",
-              }}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={() => handleGenreClick(genre)}
-            >
-              {genre}
-            </motion.button>
-          );
-        })}
-      </div>
+    <div className="Mood-Slider-Box">
+      {!submitClicked ? (
+        <>
+          <h1>What's your mood?</h1>
+          <ThemeProvider theme={theme}>
+            <Slider
+              aria-label="Custom marks"
+              defaultValue={1}
+              getAriaValueText={valuetext}
+              step={25}
+              valueLabelDisplay="off"
+              marks={marks}
+              min={1}
+              max={100}
+              onChange={handleSliderChange}
+            />
+          </ThemeProvider>
+          {sliderValue > 0 && (
+            <button onClick={() => setSubmitClicked(true)}>Submit mood</button>
+          )}
+        </>
+      ) : (
+        <Playlist genres={genres} moodValue={sliderValue} />
+      )}
     </div>
   );
 };

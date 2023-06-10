@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const getAuthToken = async () => {
-  await axios.get("http://localhost:80/auth/token").then((response) => {
+  await axios.get("http://localhost:80/auth_token").then((response) => {
     console.log(response.data);
     return response.data;
   });

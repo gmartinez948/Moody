@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import LandingPage from "./components/LandingPage";
-import Moods from "./components/Moods";
+import Genres from "./components/Genres";
 
 function App() {
   return (
@@ -15,7 +15,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<LandingPage />} />
-          <Route path="/moody/" element={<Moods />} />
+          <Route path="/moody/" element={<Genres />} />
         </Routes>
       </BrowserRouter>
     </div>

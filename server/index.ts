@@ -1,6 +1,3 @@
-import { rejects } from "assert";
-import { access } from "fs";
-
 require("dotenv").config();
 const axios = require("axios");
 const express = require("express");
@@ -95,16 +92,20 @@ const readFile = (filePath) => {
   });
 };
 
+app.get("/auth_token/", (req, res) => {
+  return readFile("access_token.json").then((token) => res.json({ token }));
+});
+
 app.get("/recs/", (req, res) => {
-  const minBPM = 60; // Minimum BPM for the playlist
-  const maxBPM = 100; // Maximum BPM for the playlist
-  const max_v = 0.8;
+  const { seed_genres, min_tempo, max_tempo, max_valence } = req.query;
+  console.log("hit");
 
   async function recommendPlaylistByBPM() {
     try {
       const access_token = await readFile("access_token.json");
+      // template for sad songs; testing out
       const response = await axios.get(
-        `https://api.spotify.com/v1/recommendations?seed_genres=latin&min_tempo=${minBPM}&max_tempo=${maxBPM}&limit=10&max_valence=${max_v}`,
+        `https://api.spotify.com/v1/recommendations?seed_genres=${seed_genres}&limit=20&target_valence=${max_valence}&seed_tracks=${"3UCp4g1EWXVKcrZsW0aGGD,0FUT0sHE6An4sKU4W6LH1c"}&target_energy=${"0.2"}&target_danceability=${"0.2"}&target_popularity=${"10"}`,
         {
           headers: {
             Authorization: `Bearer ${access_token}`,
@@ -112,11 +113,11 @@ app.get("/recs/", (req, res) => {
         }
       );
       if (response.status === 200) {
-        console.log(response.data, "recommended");
         const tracks = response.data.tracks;
         if (tracks.length > 0) {
           const playlist = tracks.map((track) => track);
           // console.log("Recommended Playlist:", playlist);
+          res.json({ playlist });
         } else {
           console.log("No tracks found for the specified BPM range.");
         }
@@ -129,63 +130,6 @@ app.get("/recs/", (req, res) => {
   }
 
   recommendPlaylistByBPM();
-});
-
-app.get("/artists/", (req, res) => {
-  const searchQuery = "Love";
-  async function searchRandomArtists() {
-    try {
-      const response = await axios.get(
-        `https://api.spotify.com/v1/search?type=artist&q=${searchQuery}`,
-        {
-          headers: {
-            Authorization: `Bearer ${process.env.ACCESS_TOKEN}`,
-          },
-        }
-      );
-
-      if (response.status === 200) {
-        const artists = response.data.artists.items;
-        console.log(artists);
-        if (artists.length > 0) {
-          const randomIndex = Math.floor(Math.random() * artists.length);
-          const randomArtist = artists[randomIndex];
-          console.log("Random Artist:", randomArtist.name);
-        } else {
-          console.log("No artists found.");
-        }
-      } else {
-        console.log("Error retrieving artists:", response.statusText);
-      }
-    } catch (error) {
-      console.log("Error:", error.message);
-    }
-  }
-
-  searchRandomArtists();
-});
-
-// gets recommendations from the api
-app.get(`/recommendations/`, (req, res) => {
-  if (access_token) {
-    const url =
-      "https://api.spotify.com/v1/recommendations?seed_artists=party&seed_genres=classical%2Ccountry&seed_tracks=0c6xIDDpzE81m2q797ordA";
-    axios
-      .get(url, {
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-        },
-      })
-      .then((response) => {
-        console.log(response);
-        res.json({ data: response.data });
-      })
-      .catch((error) => {
-        res.send(error);
-      });
-  } else {
-    res.redirect("http://localhost:3000/");
-  }
 });
 
 app.listen(port, (err) => console.log(err ? err : `listening on port ${port}`));
