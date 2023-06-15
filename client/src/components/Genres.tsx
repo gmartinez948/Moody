@@ -80,7 +80,10 @@ const Genres = () => {
           .get("https://api.spotify.com/v1/me", {
             headers: { Authorization: `Bearer ${token}` },
           })
-          .then((userInfo) => setUserId(userInfo.data.id))
+          .then((userInfo) => {
+            console.log(userInfo.data);
+            setUserId(userInfo.data.id);
+          })
           .catch((error) => console.log(error.message))
       );
     });

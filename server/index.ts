@@ -1,3 +1,5 @@
+import { create } from "domain";
+
 require("dotenv").config();
 const axios = require("axios");
 const express = require("express");
@@ -115,7 +117,6 @@ app.get("/recs/", (req, res) => {
         const tracks = response.data.tracks;
         if (tracks.length > 0) {
           const playlist = tracks.map((track) => track);
-          // console.log("Recommended Playlist:", playlist);
           res.json({ playlist });
         } else {
           console.log("No tracks found for the specified BPM range.");
@@ -129,6 +130,30 @@ app.get("/recs/", (req, res) => {
   }
 
   recommendPlaylistByBPM();
+});
+
+app.post("/create_playlist/", (req, res) => {
+  const { userId, playlistName } = req.body;
+
+  const createPlaylist = async () => {
+    try {
+      const access_token = await readFile("access_token.json");
+      await axios({
+        method: "post",
+        url: `https://api.spotify.com/v1/users/${userId}/playlists`,
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+        data: {
+          name: playlistName,
+          public: false,
+        },
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  createPlaylist();
 });
 
 app.listen(port, (err) => console.log(err ? err : `listening on port ${port}`));
