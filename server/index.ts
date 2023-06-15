@@ -98,7 +98,6 @@ app.get("/auth_token/", (req, res) => {
 
 app.get("/recs/", (req, res) => {
   const { seed_genres, min_tempo, max_tempo, max_valence } = req.query;
-  console.log("hit");
 
   async function recommendPlaylistByBPM() {
     try {

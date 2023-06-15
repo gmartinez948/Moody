@@ -54,7 +54,15 @@ const valuetext = (value: number) => {
   return `${value}`;
 };
 
-const Moods = ({ genres }: { genres: string[] }) => {
+const Moods = ({
+  genres,
+  userId,
+  playlistName,
+}: {
+  genres: string[];
+  userId: string | null;
+  playlistName: string;
+}) => {
   const [sliderValue, setSliderValue] = useState<number>(0);
   const [submitClicked, setSubmitClicked] = useState(false);
 

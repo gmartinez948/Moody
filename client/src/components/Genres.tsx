@@ -1,9 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, {
+  ChangeEvent,
+  FormEvent,
+  FormEventHandler,
+  useEffect,
+  useState,
+} from "react";
 import Moods from "./Moods";
 import axios from "axios";
-import { getAuthToken, getTrack } from "../hooks/getAuthToken";
+import { getTrack } from "../hooks/getAuthToken";
 import "../App.css";
 import { motion } from "framer-motion";
+import Alert from "@mui/material/Alert";
 
 const genres: string[] = [
   "Pop",
@@ -32,7 +39,10 @@ const Genres = () => {
   const [selectedGenres, setSelectedGenres] = useState<never | string[]>([]);
   const [genreCount, setGenreCount] = useState(0);
   const [submitClicked, setSubmitClicked] = useState(false);
-  const [token, setToken] = useState(getAuthToken());
+  const [token, setToken] = useState<null | string>(null);
+  const [userId, setUserId] = useState<null | string>(null);
+  const [playlistName, setPlaylistName] = useState("");
+  const [error, setError] = useState("");
 
   const handleGenreClick = (genre: string) => {
     // the genre count continues to increase somehow.. fix this. // update: this is fixed with the conditional rendering below, but still smelly code
@@ -52,11 +62,52 @@ const Genres = () => {
       }
     }
   };
-  // using the genre count, if it is greater than 5, I will pass along the selected genres to a component and make the api call to get recom
 
-  // add a submit button
+  const getAuthToken = async () => {
+    return new Promise((resolve) => {
+      resolve(
+        axios.get("http://localhost:80/auth_token").then((response) => {
+          setToken(response.data.token);
+        })
+      );
+    });
+  };
 
-  const onSubmit = () => {
+  const getUserInfo = async () => {
+    return new Promise((resolve) => {
+      resolve(
+        axios
+          .get("https://api.spotify.com/v1/me", {
+            headers: { Authorization: `Bearer ${token}` },
+          })
+          .then((userInfo) => setUserId(userInfo.data.id))
+          .catch((error) => console.log(error.message))
+      );
+    });
+  };
+
+  useEffect(() => {
+    getAuthToken().then(() => getUserInfo());
+  }, []);
+
+  useEffect(() => {
+    if (token) {
+      getUserInfo();
+    }
+  }, [token]);
+
+  const handlePlaylistChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setPlaylistName(event.target.value);
+  };
+
+  const handlePlaylistFormSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (playlistName.trim() === "") {
+      setError("Please enter a playlist name");
+      return;
+    }
+
+    setError("");
     setSubmitClicked(true);
   };
 
@@ -73,6 +124,7 @@ const Genres = () => {
             {genres.map((genre) => {
               return (
                 <motion.button
+                  key={genre}
                   style={{
                     backgroundColor: "#ff7f00",
                     border: selectedGenres.includes(genre.toLowerCase())
@@ -89,16 +141,24 @@ const Genres = () => {
             })}
           </div>
           {genreCount > 0 && (
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              onClick={() => onSubmit()}
-            >
-              Submit
-            </motion.button>
+            <>
+              <h1>Now, name your playlist</h1>
+              <form onSubmit={handlePlaylistFormSubmit}>
+                <input type="text" onChange={handlePlaylistChange}></input>
+                <motion.button whileHover={{ scale: 1.1 }} type="submit">
+                  Submit
+                </motion.button>
+              </form>
+              {error ? <Alert severity="error">{error}</Alert> : null}
+            </>
           )}
         </>
       ) : (
-        <Moods genres={selectedGenres} />
+        <Moods
+          genres={selectedGenres}
+          userId={userId}
+          playlistName={playlistName}
+        />
       )}
     </div>
   );
