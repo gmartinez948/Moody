@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import App from "../App";
 import { appendFileSync } from "fs";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -13,6 +13,7 @@ import {
   Typography,
 } from "@mui/material";
 import { SkipPrevious, PlayArrow, SkipNext } from "@mui/icons-material";
+import SpotifyPlayer from "./SpotifyPlayer";
 
 const Playlist = ({
   genres,
@@ -30,6 +31,8 @@ const Playlist = ({
   // do not leave as any.. return
   const [tracks, setTracks] = useState<any>([]);
   const [playlistToken, setPlaylistToken] = useState(null);
+  // useRef so that we don't run axios requests twice
+  const dataFetchedRef = useRef(false);
 
   const applyBpmRange = (moodValue: number | null) => {
     if (moodValue !== null) {
@@ -63,7 +66,6 @@ const Playlist = ({
 
   const getPlaylists = async () => {
     try {
-      // this is not hitting;;
       await axios
         .get("http://localhost:80/recs/", {
           params: {
@@ -100,84 +102,44 @@ const Playlist = ({
     try {
       const data: Record<string, any> = {
         playlist_id: playlistToken,
-        uris: tracks.map((track: any) => track.uri),
+        uris: tracks,
       };
       await axios
         .post("http://localhost:80/create_playlist", data)
         .then((result) => console.log(result, "result"))
-        .catch((error) => console.log(error));
+        .catch((error) => console.log(error, "error"));
     } catch (error) {
       console.log(error);
     }
   };
 
   useEffect(() => {
-    applyBpmRange(moodValue);
+    (async () => {
+      if (dataFetchedRef.current) return;
+      dataFetchedRef.current = true;
+      await applyBpmRange(moodValue);
+      await createPlaylistId();
+    })();
   }, []);
 
   useEffect(() => {
-    const getAll = async () => {
-      try {
-        if (bpmRange.length && valence !== null) {
-          await getPlaylists();
-        }
-        await createPlaylistId();
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    getAll();
-  }, []);
+    if (bpmRange.length && valence !== null) {
+      getPlaylists();
+    }
+  }, [valence]);
+
+  useEffect(() => {
+    if (playlistToken !== null && tracks.length) {
+      createPlaylist();
+    }
+  }, [playlistToken, tracks]);
 
   return (
     <div>
       {tracks.length ? (
         <>
           <h1>Here's your Moody playlist!</h1>
-          {tracks.map((song: any) => {
-            return (
-              <Card sx={{ display: "flex" }}>
-                <Box sx={{ display: "flex", flexDirection: "column" }}>
-                  <CardContent sx={{ flex: "1 0 auto" }}>
-                    <Typography component="div" variant="h5">
-                      {song.name}
-                    </Typography>
-                    {song.artists.map((artist: any) => {
-                      return (
-                        <Typography
-                          variant="subtitle1"
-                          color="text.secondary"
-                          component="div"
-                        >
-                          {artist.name}
-                        </Typography>
-                      );
-                    })}
-                  </CardContent>
-                  <Box
-                    sx={{ display: "flex", alignItems: "center", pl: 1, pb: 1 }}
-                  >
-                    {/* <IconButton aria-label="previous">
-                    {theme.direction === "rtl" ? <SkipNext /> : <SkipPrevious />}
-                  </IconButton> */}
-                    {/* <IconButton aria-label="play/pause">
-                      <PlayArrow />
-                    </IconButton> */}
-                    {/* <IconButton aria-label="next">
-                    {theme.direction === "rtl" ? <SkipPrevious /> : <SkipNext />}
-                  </IconButton> */}
-                  </Box>
-                </Box>
-                <CardMedia
-                  component="img"
-                  sx={{ width: 151 }}
-                  image={song.album.images[0].url}
-                  alt="Live from space album cover"
-                />
-                <CardMedia component="audio" controls src={song.preview_url} />
-              </Card>
-            );
-          })}
+          <SpotifyPlayer tracks={tracks} />
         </>
       ) : (
         <Box sx={{ display: "flex" }}>

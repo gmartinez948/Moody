@@ -11,6 +11,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(express.json());
 const fs = require("fs");
+const bodyParser = require("body-parser");
+app.use(bodyParser.json());
 
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
@@ -146,7 +148,7 @@ app.post("/create_playlist_id", (req, res) => {
       const playlistData = {
         name: playlistName,
         description: "none",
-        public: true,
+        public: "true",
       };
       const response = await axios.post(
         `https://api.spotify.com/v1/users/${user_id}/playlists`,
@@ -165,12 +167,7 @@ app.post("/create_playlist", (req, res) => {
   const createPlaylist = async () => {
     try {
       const { playlist_id, uris } = req.body;
-      console.log(uris);
-      console.log("inside last function");
-      const playlistData = {
-        uris: uris.map((track: any) => track.uri.join(",")),
-        position: 0,
-      };
+      const mappedUris = uris.map((track: any) => track.uri);
       const access_token = await readFile("access_token.json");
       const headers = {
         Authorization: `Bearer ${access_token}`,
@@ -178,7 +175,9 @@ app.post("/create_playlist", (req, res) => {
       };
       const response = axios.post(
         `https://api.spotify.com/v1/playlists/${playlist_id}/tracks`,
-        playlistData,
+        {
+          uris: mappedUris,
+        },
         { headers }
       );
       console.log(response.data, "data");
