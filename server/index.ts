@@ -9,8 +9,8 @@ const app = express();
 const cors = require("cors");
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
+app.use(express.json());
 const fs = require("fs");
-let access_token;
 
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
@@ -32,6 +32,8 @@ const stateKey = "spotify_auth_state";
 app.get("/login", (req, res) => {
   var scope =
     "streaming \
+    playlist-modify-private \
+    playlist-modify-public \
                user-read-email \
                user-read-private";
 
@@ -132,25 +134,56 @@ app.get("/recs/", (req, res) => {
   recommendPlaylistByBPM();
 });
 
-app.post("/create_playlist/", (req, res) => {
-  const { userId, playlistName } = req.body;
+app.post("/create_playlist_id", (req, res) => {
+  const createPlaylistId = async () => {
+    try {
+      const { playlistName, user_id } = req.body;
+      const access_token = await readFile("access_token.json");
+      const headers = {
+        Authorization: `Bearer ${access_token}`,
+        "Content-Type": "application/json",
+      };
+      const playlistData = {
+        name: playlistName,
+        description: "none",
+        public: true,
+      };
+      const response = await axios.post(
+        `https://api.spotify.com/v1/users/${user_id}/playlists`,
+        playlistData,
+        { headers }
+      );
+      res.json(response.data);
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
+  createPlaylistId();
+});
 
+app.post("/create_playlist", (req, res) => {
   const createPlaylist = async () => {
     try {
+      const { playlist_id, uris } = req.body;
+      console.log(uris);
+      console.log("inside last function");
+      const playlistData = {
+        uris: uris.map((track: any) => track.uri.join(",")),
+        position: 0,
+      };
       const access_token = await readFile("access_token.json");
-      await axios({
-        method: "post",
-        url: `https://api.spotify.com/v1/users/${userId}/playlists`,
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-        },
-        data: {
-          name: playlistName,
-          public: false,
-        },
-      });
+      const headers = {
+        Authorization: `Bearer ${access_token}`,
+        "Content-Type": "application/json",
+      };
+      const response = axios.post(
+        `https://api.spotify.com/v1/playlists/${playlist_id}/tracks`,
+        playlistData,
+        { headers }
+      );
+      console.log(response.data, "data");
     } catch (error) {
-      console.error(error);
+      console.log(error);
     }
   };
   createPlaylist();

@@ -17,14 +17,19 @@ import { SkipPrevious, PlayArrow, SkipNext } from "@mui/icons-material";
 const Playlist = ({
   genres,
   moodValue,
+  userId,
+  playlistName,
 }: {
   genres: string[];
   moodValue: number;
+  userId: string | null;
+  playlistName: string;
 }) => {
   const [bpmRange, setBpmRange] = useState<never | number[]>([]);
   const [valence, setValence] = useState<null | number>(null);
   // do not leave as any.. return
   const [tracks, setTracks] = useState<any>([]);
+  const [playlistToken, setPlaylistToken] = useState(null);
 
   const applyBpmRange = (moodValue: number | null) => {
     if (moodValue !== null) {
@@ -58,34 +63,71 @@ const Playlist = ({
 
   const getPlaylists = async () => {
     try {
-      if (bpmRange.length && valence !== null) {
-        await axios
-          .get("http://localhost:80/recs/", {
-            params: {
-              seed_genres: genres.join(","),
-              min_tempo: bpmRange[0],
-              max_tempo: bpmRange[1],
-              max_valence: valence,
-            },
-          })
-          .then((tracks) => setTracks(tracks.data.playlist))
-          .catch((error) => console.log(error));
-      }
+      // this is not hitting;;
+      await axios
+        .get("http://localhost:80/recs/", {
+          params: {
+            seed_genres: genres.join(","),
+            min_tempo: bpmRange[0],
+            max_tempo: bpmRange[1],
+            max_valence: valence,
+          },
+        })
+        .then((tracks) => setTracks(tracks.data.playlist))
+        .catch((error) => console.log(error));
     } catch (error) {
       // show something to the user if there is an error
       console.log(error);
     }
   };
 
-  // console.log(tracks);
+  const createPlaylistId = async () => {
+    const data = {
+      playlistName,
+      user_id: userId,
+    };
+    try {
+      await axios
+        .post("http://localhost:80/create_playlist_id", data)
+        .then((result) => setPlaylistToken(result.data.id))
+        .catch((error) => console.log(error));
+    } catch (error) {
+      console.log(error, "error here");
+    }
+  };
+
+  const createPlaylist = async () => {
+    try {
+      const data: Record<string, any> = {
+        playlist_id: playlistToken,
+        uris: tracks.map((track: any) => track.uri),
+      };
+      await axios
+        .post("http://localhost:80/create_playlist", data)
+        .then((result) => console.log(result, "result"))
+        .catch((error) => console.log(error));
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
     applyBpmRange(moodValue);
   }, []);
 
   useEffect(() => {
-    getPlaylists();
-  }, [valence]);
+    const getAll = async () => {
+      try {
+        if (bpmRange.length && valence !== null) {
+          await getPlaylists();
+        }
+        await createPlaylistId();
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getAll();
+  }, []);
 
   return (
     <div>

@@ -96,7 +96,12 @@ const Moods = ({
           )}
         </>
       ) : (
-        <Playlist genres={genres} moodValue={sliderValue} />
+        <Playlist
+          genres={genres}
+          moodValue={sliderValue}
+          userId={userId}
+          playlistName={playlistName}
+        />
       )}
     </div>
   );

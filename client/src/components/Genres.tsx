@@ -81,7 +81,6 @@ const Genres = () => {
             headers: { Authorization: `Bearer ${token}` },
           })
           .then((userInfo) => {
-            console.log(userInfo.data);
             setUserId(userInfo.data.id);
           })
           .catch((error) => console.log(error.message))
