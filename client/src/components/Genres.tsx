@@ -74,6 +74,7 @@ const Genres = () => {
   };
 
   const getUserInfo = async () => {
+    debugger;
     return new Promise((resolve) => {
       resolve(
         axios
@@ -89,7 +90,7 @@ const Genres = () => {
   };
 
   useEffect(() => {
-    getAuthToken().then(() => getUserInfo());
+    getAuthToken();
   }, []);
 
   useEffect(() => {

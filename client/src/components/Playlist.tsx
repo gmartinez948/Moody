@@ -4,15 +4,6 @@ import App from "../App";
 import { appendFileSync } from "fs";
 import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
-
-import {
-  Card,
-  CardContent,
-  CardMedia,
-  IconButton,
-  Typography,
-} from "@mui/material";
-import { SkipPrevious, PlayArrow, SkipNext } from "@mui/icons-material";
 import SpotifyPlayer from "./SpotifyPlayer";
 
 const Playlist = ({
@@ -118,7 +109,7 @@ const Playlist = ({
       if (dataFetchedRef.current) return;
       dataFetchedRef.current = true;
       await applyBpmRange(moodValue);
-      await createPlaylistId();
+      // await createPlaylistId();
     })();
   }, []);
 
@@ -141,11 +132,7 @@ const Playlist = ({
           <h1>Here's your Moody playlist!</h1>
           <SpotifyPlayer tracks={tracks} />
         </>
-      ) : (
-        <Box sx={{ display: "flex" }}>
-          <CircularProgress />
-        </Box>
-      )}
+      ) : null}
     </div>
   );
 };

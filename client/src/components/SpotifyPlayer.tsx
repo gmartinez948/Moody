@@ -1,5 +1,7 @@
 import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
+import { getAuthToken } from "../hooks/getAuthToken";
+
 import {
   WebPlaybackSDK,
   usePlaybackState,
@@ -7,25 +9,15 @@ import {
   useSpotifyPlayer,
   useWebPlaybackSDKReady,
 } from "react-spotify-web-playback-sdk";
+import SongCard from "./SongCard";
 
-type PlayerDevice = {
-  device_id: string;
-  status: "ready" | "not_ready";
-};
+const AUTH_TOKEN = "your token here!";
 
-const getAuthToken = async () => {
-  return new Promise((resolve) => {
-    resolve(
-      axios
-        .get("http://localhost:80/auth_token")
-        .then((response) => response.data.token)
-    );
-  });
-};
-
-const MySpotifyPlayer = ({ tracks }: any) => {
+const SpotifyPlayer = ({ tracks }: any) => {
   const [token, setToken] = useState(null);
-  console.log(tracks.map((track: any) => track.uri));
+  const [currentSong, setCurrentSong] = useState({});
+  const mappedUris = tracks.map((track: any) => track.uri);
+
   useEffect(() => {
     const authToken = async () => {
       try {
@@ -38,55 +30,21 @@ const MySpotifyPlayer = ({ tracks }: any) => {
     authToken();
   }, []);
 
-  const getOAuthToken = useCallback((callback: any) => {
-    const authToken = async () => {
-      try {
-        const token = await getAuthToken();
-        await callback(token);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    authToken();
-  }, []);
+  const getOAuthToken = useCallback((callback: any) => callback(token), [
+    token,
+  ]);
 
-  const MyPlayer = () => {
-    const webPlaybackSDKReady = useWebPlaybackSDKReady();
-    const device = usePlayerDevice();
-    // console.log(device, "device");
+  const SongTitle: React.FC = () => {
     const playbackState = usePlaybackState();
-    // console.log(playbackState);
 
-    if (!webPlaybackSDKReady) return <div>Loading...</div>;
+    if (playbackState === null) return null;
 
-    const playCarlyRaeJepsen = () => {
-      const mappedUris = tracks.map((track: any) => track.uri);
-      if (device === null) return;
-
-      fetch(
-        `https://api.spotify.com/v1/me/player/play?device_id=${device.device_id}`,
-        {
-          method: "PUT",
-          body: JSON.stringify({
-            uris: mappedUris,
-          }),
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-        .then((result) => console.log(result))
-        .catch((error) => console.log(error));
-    };
-
-    if (device === null) return null;
-
-    return <button onClick={playCarlyRaeJepsen}>Play Carly Rae Jepsen</button>;
+    return <p>Current song: {playbackState.track_window.current_track.name}</p>;
   };
 
   const PauseResumeButton = () => {
     const player = useSpotifyPlayer();
+    // console.log(player);
 
     if (player === null) return null;
 
@@ -98,22 +56,63 @@ const MySpotifyPlayer = ({ tracks }: any) => {
     );
   };
 
+  const PlayTracks = () => {
+    const device = usePlayerDevice();
+    const player = useSpotifyPlayer();
+    const [isPaused, setIsPaused] = useState(false);
+    const [playButtonClicked, setPlayButtonClicked] = useState(false);
+
+    const playTracks = () => {
+      const mappedUris = tracks.map((track: any) => track.uri);
+      if (device !== null) {
+        fetch(
+          `https://api.spotify.com/v1/me/player/play?device_id=${device.device_id}`,
+          {
+            method: "PUT",
+            body: JSON.stringify({ uris: mappedUris }),
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      }
+      return;
+    };
+
+    useEffect(() => {
+      if (device) {
+        playTracks();
+      }
+    }, [device]);
+    if (player === null) return null;
+
+    return (
+      <div>
+        <button onClick={() => player.pause()}>pause</button>
+        <button onClick={() => player.resume()}>resume</button>
+      </div>
+    );
+
+    // return (
+    //   <button onClick={() => playTracks()}>
+    //     {!isPaused ? "Play" : "Pause"}
+    //   </button>
+    // );
+  };
+
   return (
-    <div style={{ background: "blue" }}>
-      <WebPlaybackSDK
-        initialDeviceName="My awesome Spotify app"
-        getOAuthToken={getOAuthToken}
-        initialVolume={0.5}
-        connectOnInitialized={true}
-      >
-        {/* `TogglePlay` and `SongTitle` will be defined later. */}
-        {/* <TogglePlay />
-      <SongTitle /> */}
-        <MyPlayer />
-        {/* <PauseResumeButton /> */}
-      </WebPlaybackSDK>
-    </div>
+    <WebPlaybackSDK
+      initialDeviceName="Moody app"
+      getOAuthToken={getOAuthToken}
+      initialVolume={0.5}
+      connectOnInitialized={true}
+    >
+      {/* `TogglePlay` and `SongTitle` will be defined later. */}
+      <SongTitle />
+      <PlayTracks />
+    </WebPlaybackSDK>
   );
 };
 
-export default MySpotifyPlayer;
+export default SpotifyPlayer;
