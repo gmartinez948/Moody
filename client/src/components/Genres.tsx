@@ -74,7 +74,6 @@ const Genres = () => {
   };
 
   const getUserInfo = async () => {
-    debugger;
     return new Promise((resolve) => {
       resolve(
         axios

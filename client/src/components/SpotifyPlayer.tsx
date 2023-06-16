@@ -9,9 +9,6 @@ import {
   useSpotifyPlayer,
   useWebPlaybackSDKReady,
 } from "react-spotify-web-playback-sdk";
-import SongCard from "./SongCard";
-
-const AUTH_TOKEN = "your token here!";
 
 const SpotifyPlayer = ({ tracks }: any) => {
   const [token, setToken] = useState(null);
@@ -34,24 +31,24 @@ const SpotifyPlayer = ({ tracks }: any) => {
     token,
   ]);
 
-  const SongTitle: React.FC = () => {
+  const SongDetails: React.FC = () => {
     const playbackState = usePlaybackState();
 
     if (playbackState === null) return null;
 
-    return <p>Current song: {playbackState.track_window.current_track.name}</p>;
-  };
-
-  const PauseResumeButton = () => {
-    const player = useSpotifyPlayer();
-    // console.log(player);
-
-    if (player === null) return null;
+    const transformArtistNames = () => {
+      return playbackState.track_window.current_track.artists
+        .map((artist) => artist.name)
+        .join(", ");
+    };
 
     return (
       <div>
-        <button onClick={() => player.pause()}>pause</button>
-        <button onClick={() => player.resume()}>resume</button>
+        <img
+          src={playbackState.track_window.current_track.album.images[0].url}
+        />
+        <p>Current song: {playbackState.track_window.current_track.name}</p>
+        <p>{transformArtistNames()}</p>
       </div>
     );
   };
@@ -59,8 +56,6 @@ const SpotifyPlayer = ({ tracks }: any) => {
   const PlayTracks = () => {
     const device = usePlayerDevice();
     const player = useSpotifyPlayer();
-    const [isPaused, setIsPaused] = useState(false);
-    const [playButtonClicked, setPlayButtonClicked] = useState(false);
 
     const playTracks = () => {
       const mappedUris = tracks.map((track: any) => track.uri);
@@ -80,6 +75,49 @@ const SpotifyPlayer = ({ tracks }: any) => {
       return;
     };
 
+    const playNext = () => {
+      if (device === null) return;
+      axios({
+        method: "post",
+        url: "https://api.spotify.com/v1/me/player/next",
+        headers: {
+          Authorization: "Bearer " + token,
+          "Content-Type": "application/json",
+        },
+        params: {
+          device_id: device.device_id,
+        },
+      })
+        .then((response) => {
+          console.log("Playback moved to the next track");
+        })
+        .catch((error) => {
+          console.error("Error moving to the next track:", error.response.data);
+        });
+    };
+
+    const playPrevious = () => {
+      if (device === null) return;
+
+      axios({
+        method: "post",
+        url: "https://api.spotify.com/v1/me/player/previous",
+        headers: {
+          Authorization: "Bearer " + token,
+          "Content-Type": "application/json",
+        },
+        params: {
+          device_id: device.device_id,
+        },
+      })
+        .then((response) => {
+          console.log("Playback moved to the next track");
+        })
+        .catch((error) => {
+          console.error("Error moving to the next track:", error.response.data);
+        });
+    };
+
     useEffect(() => {
       if (device) {
         playTracks();
@@ -91,6 +129,8 @@ const SpotifyPlayer = ({ tracks }: any) => {
       <div>
         <button onClick={() => player.pause()}>pause</button>
         <button onClick={() => player.resume()}>resume</button>
+        <button onClick={() => playPrevious()}>Play Previous</button>
+        <button onClick={() => playNext()}>Play Next</button>
       </div>
     );
 
@@ -108,8 +148,7 @@ const SpotifyPlayer = ({ tracks }: any) => {
       initialVolume={0.5}
       connectOnInitialized={true}
     >
-      {/* `TogglePlay` and `SongTitle` will be defined later. */}
-      <SongTitle />
+      <SongDetails />
       <PlayTracks />
     </WebPlaybackSDK>
   );
