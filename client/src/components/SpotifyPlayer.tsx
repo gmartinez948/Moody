@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
 import { getAuthToken } from "../hooks/getAuthToken";
+import "../App.css";
 
 import {
   WebPlaybackSDK,
@@ -43,12 +44,12 @@ const SpotifyPlayer = ({ tracks }: any) => {
     };
 
     return (
-      <div>
+      <div className="Song-Card-Text">
         <img
           src={playbackState.track_window.current_track.album.images[0].url}
         />
         <p>Current song: {playbackState.track_window.current_track.name}</p>
-        <p>{transformArtistNames()}</p>
+        <p>Artist: {transformArtistNames()}</p>
       </div>
     );
   };
@@ -133,12 +134,6 @@ const SpotifyPlayer = ({ tracks }: any) => {
         <button onClick={() => playNext()}>Play Next</button>
       </div>
     );
-
-    // return (
-    //   <button onClick={() => playTracks()}>
-    //     {!isPaused ? "Play" : "Pause"}
-    //   </button>
-    // );
   };
 
   return (
@@ -148,8 +143,10 @@ const SpotifyPlayer = ({ tracks }: any) => {
       initialVolume={0.5}
       connectOnInitialized={true}
     >
-      <SongDetails />
-      <PlayTracks />
+      <div className="Song-Card-Container">
+        <SongDetails />
+        <PlayTracks />
+      </div>
     </WebPlaybackSDK>
   );
 };

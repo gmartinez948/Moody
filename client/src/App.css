@@ -168,6 +168,24 @@ body {
   font-size: 3em;
 }
 
+.Song-Card-Container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  background: orange;
+  /* padding: 40px; */
+  width: 600px;
+  height: 600px;
+}
+
+.Song-Card-Text > p {
+  white-space: normal;
+  overflow-wrap: break-word;
+  padding: 5px;
+}
+
 /*  */
 /* Apply responsive styles for different screen sizes */
 /* Mobile-first approach */
