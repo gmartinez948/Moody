@@ -2,6 +2,7 @@ import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
 import { getAuthToken } from "../hooks/getAuthToken";
 import "../App.css";
+import CircularProgress from "@mui/material/CircularProgress";
 
 import {
   WebPlaybackSDK,
@@ -13,8 +14,6 @@ import {
 
 const SpotifyPlayer = ({ tracks }: any) => {
   const [token, setToken] = useState(null);
-  const [currentSong, setCurrentSong] = useState({});
-  const mappedUris = tracks.map((track: any) => track.uri);
 
   useEffect(() => {
     const authToken = async () => {
@@ -31,28 +30,6 @@ const SpotifyPlayer = ({ tracks }: any) => {
   const getOAuthToken = useCallback((callback: any) => callback(token), [
     token,
   ]);
-
-  const SongDetails: React.FC = () => {
-    const playbackState = usePlaybackState();
-
-    if (playbackState === null) return null;
-
-    const transformArtistNames = () => {
-      return playbackState.track_window.current_track.artists
-        .map((artist) => artist.name)
-        .join(", ");
-    };
-
-    return (
-      <div className="Song-Card-Text">
-        <img
-          src={playbackState.track_window.current_track.album.images[0].url}
-        />
-        <p>Current song: {playbackState.track_window.current_track.name}</p>
-        <p>Artist: {transformArtistNames()}</p>
-      </div>
-    );
-  };
 
   const PlayTracks = () => {
     const device = usePlayerDevice();
@@ -77,12 +54,13 @@ const SpotifyPlayer = ({ tracks }: any) => {
     };
 
     const playNext = () => {
+      // EXTRACT THIS INTO HELPER METHOD
       if (device === null) return;
       axios({
         method: "post",
         url: "https://api.spotify.com/v1/me/player/next",
         headers: {
-          Authorization: "Bearer " + token,
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         params: {
@@ -99,12 +77,12 @@ const SpotifyPlayer = ({ tracks }: any) => {
 
     const playPrevious = () => {
       if (device === null) return;
-
+      // EXTRACT THIS INTO HELPER METHOD
       axios({
         method: "post",
         url: "https://api.spotify.com/v1/me/player/previous",
         headers: {
-          Authorization: "Bearer " + token,
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         params: {
@@ -127,11 +105,46 @@ const SpotifyPlayer = ({ tracks }: any) => {
     if (player === null) return null;
 
     return (
-      <div>
-        <button onClick={() => player.pause()}>pause</button>
+      <div className="Current-Song-Buttons">
         <button onClick={() => player.resume()}>resume</button>
+        <button onClick={() => player.pause()}>pause</button>
         <button onClick={() => playPrevious()}>Play Previous</button>
         <button onClick={() => playNext()}>Play Next</button>
+      </div>
+    );
+  };
+
+  const SongDetails: React.FC = () => {
+    const playbackState = usePlaybackState();
+    const webPlaybackSDKReady = useWebPlaybackSDKReady();
+
+    if (playbackState === null) return null;
+    if (!webPlaybackSDKReady) return <CircularProgress />;
+
+    const transformArtistNames = () => {
+      return playbackState.track_window.current_track.artists
+        .map((artist) => artist.name)
+        .join(", ");
+    };
+
+    return (
+      <div className="Current-Song">
+        <img
+          src={playbackState.track_window.current_track.album.images[0].url}
+          width="75"
+        />
+        <div className="Current-Text">
+          <p>
+            <span>Current song:</span>{" "}
+            {playbackState.track_window.current_track.name}
+          </p>
+          <p>
+            <span>Artist:</span> {transformArtistNames()}
+          </p>
+          <div className="Current-Song-Buttons">
+            <PlayTracks />
+          </div>
+        </div>
       </div>
     );
   };
@@ -145,7 +158,7 @@ const SpotifyPlayer = ({ tracks }: any) => {
     >
       <div className="Song-Card-Container">
         <SongDetails />
-        <PlayTracks />
+        {/* <PlayTracks /> */}
       </div>
     </WebPlaybackSDK>
   );

@@ -180,10 +180,25 @@ body {
   height: 600px;
 }
 
-.Song-Card-Text > p {
-  white-space: normal;
-  overflow-wrap: break-word;
-  padding: 5px;
+.Current-Song {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  gap: 15px;
+  padding-left: 15px;
+}
+
+.Current-Text {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.Current-Text > p > span {
+  color: black;
+}
+
+.Current-Song-Buttons > button {
+  margin-right: 20px;
 }
 
 /*  */
