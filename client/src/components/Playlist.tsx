@@ -130,7 +130,7 @@ const Playlist = ({
       {tracks.length ? (
         <>
           <h1>Here's your Moody playlist!</h1>
-          <SpotifyPlayer tracks={tracks} />
+          <SpotifyPlayer tracks={tracks} setTracks={setTracks} />
         </>
       ) : null}
     </div>

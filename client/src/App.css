@@ -169,15 +169,16 @@ body {
 }
 
 .Song-Card-Container {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   justify-content: center;
   align-items: center;
   gap: 10px;
   background: orange;
   /* padding: 40px; */
   width: 600px;
-  height: 600px;
+  height: 800px;
+  overflow: scroll;
 }
 
 .Current-Song {
@@ -186,11 +187,25 @@ body {
   width: 100%;
   gap: 15px;
   padding-left: 15px;
+  border: 1px solid black;
+  padding: 20px;
+  background-color: greenyellow;
 }
 
-.Current-Text {
+.Song {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  gap: 15px;
+  padding-left: 15px;
+  border: 1px solid black;
+  padding: 20px;
+}
+
+.current-Song .Current-Text {
   display: flex;
   flex-direction: column;
+  align-content: baseline;
   gap: 5px;
 }
 .Current-Text > p > span {
