@@ -52,15 +52,30 @@ const SpotifyPlayer = ({ tracks, setTracks }: any) => {
     currentSong: any;
   }) => {
     const player = useSpotifyPlayer();
+    const [playClicked, setPlayClicked] = useState(false);
 
     if (player === null) return null;
 
+    const handlePlayClicked = (index: number) => {
+      playTrack(index);
+      setPlayClicked(true);
+    };
+
+    const handlePlayPauseClicked = (index: number) => {
+      if (playClicked) {
+        player.pause();
+        setPlayClicked(false);
+      } else {
+        playTrack(index);
+        setPlayClicked(true);
+      }
+    };
+
     return (
       <div className="Current-Song-Buttons">
-        <button onClick={() => playTrack(index)}>Play</button>
-        {currentSong === tracks[index] ? (
-          <button onClick={() => player.pause()}>pause</button>
-        ) : null}
+        <button onClick={() => handlePlayPauseClicked(index)}>
+          {currentSong && !playClicked ? "Play" : "Pause"}
+        </button>
       </div>
     );
   };
