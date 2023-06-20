@@ -57,7 +57,7 @@ const SpotifyPlayer = ({ tracks, setTracks }: any) => {
     if (player === null) return null;
 
     const handlePlayPauseClicked = (index: number) => {
-      if (playClicked) {
+      if (playClicked && tracks[index] === currentSong) {
         player.pause();
         setPlayClicked(false);
       } else {
