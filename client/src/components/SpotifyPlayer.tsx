@@ -56,11 +56,6 @@ const SpotifyPlayer = ({ tracks, setTracks }: any) => {
 
     if (player === null) return null;
 
-    const handlePlayClicked = (index: number) => {
-      playTrack(index);
-      setPlayClicked(true);
-    };
-
     const handlePlayPauseClicked = (index: number) => {
       if (playClicked) {
         player.pause();
@@ -74,7 +69,7 @@ const SpotifyPlayer = ({ tracks, setTracks }: any) => {
     return (
       <div className="Current-Song-Buttons">
         <button onClick={() => handlePlayPauseClicked(index)}>
-          {currentSong && !playClicked ? "Play" : "Pause"}
+          {currentSong !== tracks[index] || !playClicked ? "Play" : "Pause"}
         </button>
       </div>
     );
@@ -109,8 +104,6 @@ const SpotifyPlayer = ({ tracks, setTracks }: any) => {
       // setting the current song so I can apply styles to the current song later.
       setCurrentSong(tracks[index]);
     };
-
-    // handle slight delay for the usePlayerDevice hook to connect to the SDK
 
     if (!webPlaybackSDKReady || !tracks.length) return <CircularProgress />;
 
