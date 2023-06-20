@@ -138,7 +138,7 @@ const Playlist = ({
       ) : (
         <div>
           <div className="No-Tracks">
-            We couldn't find any playlists in genres that fit your mood 😖
+            We couldn't find any songs in genres that fit your mood 😖
             <br />
             Please refresh your browser and try again ♻️,
             <br />
