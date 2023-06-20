@@ -105,7 +105,7 @@ body {
 
 .genre-page-container {
   width: 100%;
-  margin-top: 10%;
+  /* margin-top: 10%; */
   max-width: 100%;
   margin-left: auto;
   margin-right: auto;
@@ -168,17 +168,35 @@ body {
   font-size: 3em;
 }
 
+.Playlist-Header {
+  font-family: "Oswald";
+  text-align: center;
+  margin-bottom: 0.5em;
+  font-size: 3em;
+}
+
+.Playlist-h2 {
+  font-family: "Oswald";
+  text-align: center;
+  margin-top: 20px;
+  font-size: 2em;
+}
+
+.No-Tracks {
+  text-align: left;
+  font-family: "Oswald";
+  padding: 10%;
+  font-size: 2em;
+}
+
 .Song-Card-Container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   justify-content: center;
   align-items: center;
   gap: 10px;
-  background: orange;
-  /* padding: 40px; */
-  width: 600px;
   height: 800px;
-  overflow: scroll;
+  overflow-y: scroll;
 }
 
 .Current-Song {
@@ -214,6 +232,53 @@ body {
 
 .Current-Song-Buttons > button {
   margin-right: 20px;
+}
+
+.Song-Card-Container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.Song-Card-Container::-webkit-scrollbar-track {
+  background-color: #f1f1f1; /* Change to desired background color */
+}
+
+.Song-Card-Container::-webkit-scrollbar-thumb {
+  background-color: greenyellow; /* Change to desired thumb color */
+}
+
+.Recommended-Playlist-Grid-Container {
+  margin-top: 15px;
+  display: flex;
+  flex-direction: row;
+  flex-flow: row wrap;
+  align-content: center;
+  gap: 15px;
+  justify-content: center;
+  width: inherit;
+}
+
+.Recommended-Playlist-Card {
+  display: flex;
+  flex-direction: column;
+  word-wrap: wrap;
+  text-align: center;
+  gap: 10px;
+}
+
+.Recommended-Playlist-Card > h2 {
+  padding: 5px;
+}
+
+.Recommended-Playlist-Card > img {
+  align-self: center;
+}
+
+.Recommended-Playlist-Card > button {
+  padding: 3%;
+  align-self: center;
+  background-color: greenyellow;
+  border: none;
+  border-radius: 5%;
 }
 
 /*  */

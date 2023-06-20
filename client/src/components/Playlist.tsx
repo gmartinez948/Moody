@@ -5,6 +5,7 @@ import { appendFileSync } from "fs";
 import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
 import SpotifyPlayer from "./SpotifyPlayer";
+import RecommendedPlaylists from "./RecommendedPlaylists";
 
 const Playlist = ({
   genres,
@@ -129,10 +130,24 @@ const Playlist = ({
     <div>
       {tracks.length ? (
         <>
-          <h1>Here's your Moody playlist!</h1>
+          <h1 className="Playlist-Header">Here's your Moody playlist!</h1>
           <SpotifyPlayer tracks={tracks} setTracks={setTracks} />
+          <h2 className="Playlist-h2">Here are some recommended playlists!</h2>
+          <RecommendedPlaylists />
         </>
-      ) : null}
+      ) : (
+        <div>
+          <div className="No-Tracks">
+            We couldn't find any playlists in genres that fit your mood 😖
+            <br />
+            Please refresh your browser and try again ♻️,
+            <br />
+            Here are some recommended playlists you can check out, in the
+            meantime!
+          </div>
+          <RecommendedPlaylists />
+        </div>
+      )}
     </div>
   );
 };
