@@ -232,6 +232,8 @@ body {
 
 .Current-Song-Buttons > button {
   margin-right: 20px;
+  border: none;
+  border-radius: 10%;
 }
 
 .Song-Card-Container::-webkit-scrollbar {
