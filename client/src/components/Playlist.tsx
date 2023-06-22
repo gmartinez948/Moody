@@ -3,7 +3,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import SpotifyPlayer from "./SpotifyPlayer";
 import RecommendedPlaylists from "./RecommendedPlaylists";
 
-
 const Playlist = ({
   genres,
   moodValue,
@@ -121,14 +120,15 @@ const Playlist = ({
 
   return (
     <div>
-      {tracks.length && !isLoading ? (
+      {!isLoading && (
         <>
           <h1 className="Playlist-Header">Here's your Moody playlist!</h1>
           <SpotifyPlayer tracks={tracks} setTracks={setTracks} />
           <h2 className="Playlist-h2">Here are some recommended playlists!</h2>
           <RecommendedPlaylists />
         </>
-      ) : (
+      )}
+      {!isLoading && tracks.length === 0 && (
         <div>
           <div className="No-Tracks">
             We couldn't find any songs in genres that fit your mood 😖

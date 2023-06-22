@@ -218,6 +218,7 @@ body {
   padding-left: 15px;
   border: 1px solid black;
   padding: 20px;
+  word-wrap: break-word;
 }
 
 .current-Song .Current-Text {
