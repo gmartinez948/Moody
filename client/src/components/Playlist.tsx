@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import SpotifyPlayer from "./SpotifyPlayer";
 import RecommendedPlaylists from "./RecommendedPlaylists";
 
+
 const Playlist = ({
   genres,
   moodValue,

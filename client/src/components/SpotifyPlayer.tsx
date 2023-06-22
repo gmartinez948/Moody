@@ -2,13 +2,13 @@ import { SetStateAction, useCallback, useEffect, useState } from "react";
 import { getAuthToken } from "../hooks/getAuthToken";
 import "../App.css";
 import CircularProgress from "@mui/material/CircularProgress";
-
 import {
   WebPlaybackSDK,
   usePlayerDevice,
   useSpotifyPlayer,
   useWebPlaybackSDKReady,
 } from "react-spotify-web-playback-sdk";
+import { ErrorPage } from "./ErrorPage";
 
 const SpotifyPlayer = ({ tracks, setTracks }: any) => {
   const [token, setToken] = useState<string | null>(null);
@@ -70,8 +70,7 @@ const SpotifyPlayer = ({ tracks, setTracks }: any) => {
 
     const playTrack = (index = 0) => {
       // says when there is no internet connection, null is returned.  WEIRD
-      if (device === null)
-        return <>please return to Spotify and configure settings</>;
+      if (device === null) return <ErrorPage />;
       if (tracks[index] === undefined) {
         return;
       }
