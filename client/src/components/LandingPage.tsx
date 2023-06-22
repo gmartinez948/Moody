@@ -1,6 +1,5 @@
-import { motion, useAnimation, useCycle } from "framer-motion";
+import { motion, useAnimation } from "framer-motion";
 import "../App.css";
-import React from "react";
 import { useEffect } from "react";
 const LandingPage = () => {
   const signInSpotify = () => {
@@ -31,7 +30,7 @@ const LandingPage = () => {
     }, 2000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [controls]);
 
   return (
     <div className="Landing-Page-Container">

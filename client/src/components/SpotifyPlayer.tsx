@@ -1,26 +1,14 @@
-import axios from "axios";
-import {
-  Dispatch,
-  SetStateAction,
-  memo,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { SetStateAction, useCallback, useEffect, useState } from "react";
 import { getAuthToken } from "../hooks/getAuthToken";
 import "../App.css";
 import CircularProgress from "@mui/material/CircularProgress";
 
 import {
   WebPlaybackSDK,
-  useErrorState,
-  usePlaybackState,
   usePlayerDevice,
   useSpotifyPlayer,
   useWebPlaybackSDKReady,
 } from "react-spotify-web-playback-sdk";
-import { ClassNames } from "@emotion/react";
 
 const SpotifyPlayer = ({ tracks, setTracks }: any) => {
   const [token, setToken] = useState<string | null>(null);
@@ -78,8 +66,6 @@ const SpotifyPlayer = ({ tracks, setTracks }: any) => {
   const SongDetails = ({ tracks, setTracks }: any) => {
     const webPlaybackSDKReady = useWebPlaybackSDKReady();
     const device = usePlayerDevice();
-
-    const player = useSpotifyPlayer();
     const [currentSong, setCurrentSong] = useState<any>(tracks[0]);
 
     const playTrack = (index = 0) => {
@@ -116,7 +102,11 @@ const SpotifyPlayer = ({ tracks, setTracks }: any) => {
         {tracks.map((track: any, index: number) => {
           return (
             <div className={track === currentSong ? "Current-Song" : "Song"}>
-              <img src={track.album.images[0].url} width="75" />
+              <img
+                src={track.album.images[0].url}
+                width="75"
+                alt={track.name}
+              />
               <div className="Current-Text">
                 <p>{track.name}</p>
                 <p>{transformArtistNames(track.album)}</p>

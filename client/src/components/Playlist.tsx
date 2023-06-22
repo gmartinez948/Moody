@@ -1,9 +1,5 @@
 import axios from "axios";
-import { useEffect, useRef, useState } from "react";
-import App from "../App";
-import { appendFileSync } from "fs";
-import CircularProgress from "@mui/material/CircularProgress";
-import Box from "@mui/material/Box";
+import { useCallback, useEffect, useRef, useState } from "react";
 import SpotifyPlayer from "./SpotifyPlayer";
 import RecommendedPlaylists from "./RecommendedPlaylists";
 
@@ -20,11 +16,11 @@ const Playlist = ({
 }) => {
   const [bpmRange, setBpmRange] = useState<never | number[]>([]);
   const [valence, setValence] = useState<null | number>(null);
-  // do not leave as any.. return
-  const [tracks, setTracks] = useState<any>([]);
-  const [playlistToken, setPlaylistToken] = useState(null);
+  const [tracks, setTracks] = useState<Array<Record<string, any>>>([]);
+  const [playlistToken, setPlaylistToken] = useState<null | string>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   // useRef so that we don't run axios requests twice
-  const dataFetchedRef = useRef(false);
+  const dataFetchedRef = useRef<boolean>(false);
 
   const applyBpmRange = (moodValue: number | null) => {
     if (moodValue !== null) {
@@ -56,24 +52,20 @@ const Playlist = ({
     }
   };
 
-  const getPlaylists = async () => {
-    try {
-      await axios
-        .get("http://localhost:80/recs/", {
-          params: {
-            seed_genres: genres.join(","),
-            min_tempo: bpmRange[0],
-            max_tempo: bpmRange[1],
-            max_valence: valence,
-          },
-        })
-        .then((tracks) => setTracks(tracks.data.playlist))
-        .catch((error) => console.log(error));
-    } catch (error) {
-      // show something to the user if there is an error
-      console.log(error);
-    }
-  };
+  const getPlaylists = useCallback(() => {
+    axios
+      .get("http://localhost:80/recs/", {
+        params: {
+          seed_genres: genres.join(","),
+          min_tempo: bpmRange[0],
+          max_tempo: bpmRange[1],
+          max_valence: valence,
+        },
+      })
+      .then((tracks) => setTracks(tracks.data.playlist))
+      .catch((error) => console.log(error))
+      .finally(() => setIsLoading(false));
+  }, [bpmRange, genres, valence]);
 
   const createPlaylistId = async () => {
     const data = {
@@ -112,13 +104,13 @@ const Playlist = ({
       await applyBpmRange(moodValue);
       // await createPlaylistId();
     })();
-  }, []);
+  }, [moodValue]);
 
   useEffect(() => {
     if (bpmRange.length && valence !== null) {
       getPlaylists();
     }
-  }, [valence]);
+  }, [valence, bpmRange, getPlaylists]);
 
   useEffect(() => {
     if (playlistToken !== null && tracks.length) {
@@ -128,7 +120,7 @@ const Playlist = ({
 
   return (
     <div>
-      {tracks.length ? (
+      {tracks.length && !isLoading ? (
         <>
           <h1 className="Playlist-Header">Here's your Moody playlist!</h1>
           <SpotifyPlayer tracks={tracks} setTracks={setTracks} />

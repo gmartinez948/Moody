@@ -24,7 +24,7 @@ const RecommendedPlaylists = () => {
       {playlists.map((playlist) => (
         <div className="Recommended-Playlist-Card">
           <h2>{playlist.name}</h2>
-          <img src={playlist.image} width={150} />
+          <img src={playlist.image} width={150} alt={playlist.name} />
           <button onClick={() => window.open(`${playlist.url}`)}>
             Go to playlist
           </button>

@@ -1,13 +1,12 @@
 import React, {
   ChangeEvent,
   FormEvent,
-  FormEventHandler,
+  useCallback,
   useEffect,
   useState,
 } from "react";
 import Moods from "./Moods";
 import axios from "axios";
-import { getTrack } from "../hooks/getAuthToken";
 import "../App.css";
 import { motion } from "framer-motion";
 import Alert from "@mui/material/Alert";
@@ -37,8 +36,8 @@ const genres: string[] = [
 
 const Genres = () => {
   const [selectedGenres, setSelectedGenres] = useState<never | string[]>([]);
-  const [genreCount, setGenreCount] = useState(0);
-  const [submitClicked, setSubmitClicked] = useState(false);
+  const [genreCount, setGenreCount] = useState<number>(0);
+  const [submitClicked, setSubmitClicked] = useState<boolean>(false);
   const [token, setToken] = useState<null | string>(null);
   const [userId, setUserId] = useState<null | string>(null);
   const [playlistName, setPlaylistName] = useState("");
@@ -73,7 +72,7 @@ const Genres = () => {
     });
   };
 
-  const getUserInfo = async () => {
+  const getUserInfo = useCallback(() => {
     return new Promise((resolve) => {
       resolve(
         axios
@@ -86,7 +85,7 @@ const Genres = () => {
           .catch((error) => console.log(error.message))
       );
     });
-  };
+  }, [token]);
 
   useEffect(() => {
     getAuthToken();
@@ -96,7 +95,7 @@ const Genres = () => {
     if (token) {
       getUserInfo();
     }
-  }, [token]);
+  }, [token, getUserInfo]);
 
   const handlePlaylistChange = (event: ChangeEvent<HTMLInputElement>) => {
     setPlaylistName(event.target.value);
