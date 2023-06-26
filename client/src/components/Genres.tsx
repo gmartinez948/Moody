@@ -142,16 +142,12 @@ const Genres = () => {
             })}
           </div>
           {genreCount > 0 && (
-            <>
-              <h1>Now, name your playlist</h1>
-              <form onSubmit={handlePlaylistFormSubmit}>
-                <input type="text" onChange={handlePlaylistChange}></input>
-                <motion.button whileHover={{ scale: 1.1 }} type="submit">
-                  Submit
-                </motion.button>
-              </form>
-              {error ? <Alert severity="error">{error}</Alert> : null}
-            </>
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              onClick={() => setSubmitClicked(true)}
+            >
+              Submit
+            </motion.button>
           )}
         </>
       ) : (
