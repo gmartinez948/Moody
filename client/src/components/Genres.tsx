@@ -1,15 +1,8 @@
-import React, {
-  ChangeEvent,
-  FormEvent,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import { useCallback, useEffect, useState } from "react";
 import Moods from "./Moods";
 import axios from "axios";
 import "../App.css";
 import { motion } from "framer-motion";
-import Alert from "@mui/material/Alert";
 
 const genres: string[] = [
   "Pop",
@@ -41,7 +34,6 @@ const Genres = () => {
   const [token, setToken] = useState<null | string>(null);
   const [userId, setUserId] = useState<null | string>(null);
   const [playlistName, setPlaylistName] = useState("");
-  const [error, setError] = useState("");
 
   const handleGenreClick = (genre: string) => {
     // the genre count continues to increase somehow.. fix this. // update: this is fixed with the conditional rendering below, but still smelly code
@@ -96,21 +88,6 @@ const Genres = () => {
       getUserInfo();
     }
   }, [token, getUserInfo]);
-
-  const handlePlaylistChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setPlaylistName(event.target.value);
-  };
-
-  const handlePlaylistFormSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (playlistName.trim() === "") {
-      setError("Please enter a playlist name");
-      return;
-    }
-
-    setError("");
-    setSubmitClicked(true);
-  };
 
   return (
     <div className="genre-page-container">
