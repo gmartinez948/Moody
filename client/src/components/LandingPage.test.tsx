@@ -1,10 +1,5 @@
-import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import LandingPage from "./LandingPage";
-import { BrowserRouter, Router } from "react-router-dom";
-import axios from "axios";
-import { rest } from "msw";
-import { setupServer } from "msw/node";
 
 describe("LandingPage", () => {
   test("renders a heading", () => {
