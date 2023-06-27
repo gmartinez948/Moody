@@ -73,7 +73,9 @@ const SpotifyPlayer = ({ tracks, setTracks }: any) => {
     const [devices, setDevices] = useState([]);
 
     useEffect(() => {
-      getDevices(token, setDevices);
+      if (token) {
+        getDevices(token, setDevices);
+      }
     }, []);
 
     const checkForDevices = () => {

@@ -17,10 +17,8 @@ const Playlist = ({
 }) => {
   const [bpmRange, setBpmRange] = useState<never | number[]>([]);
   const [valence, setValence] = useState<null | number>(null);
-  const [tracks, setTracks] = useState<Array<Record<string, any>>>([]);
-  const [playlistToken, setPlaylistToken] = useState<null | string>(null);
+  const [tracks, setTracks] = useState([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  // useRef so that we don't run axios requests twice
   const dataFetchedRef = useRef<boolean>(false);
 
   const applyBpmRange = (moodValue: number | null) => {
@@ -44,7 +42,8 @@ const Playlist = ({
           break;
         default:
           // what do I want to do here?
-          setBpmRange([]);
+          setBpmRange([0, 0]);
+          setValence(1);
           break;
       }
     } else {
@@ -63,12 +62,14 @@ const Playlist = ({
           max_valence: valence,
         },
       })
-      .then((tracks) => setTracks(tracks.data.playlist))
+      .then((tracks) => {
+        setTracks(tracks.data.playlist);
+        setIsLoading(false);
+      })
       .catch((error) => {
         console.error(error);
         setIsLoading(false);
-      })
-      .finally(() => setIsLoading(false));
+      });
   }, [bpmRange, genres, valence]);
 
   useEffect(() => {
@@ -88,15 +89,16 @@ const Playlist = ({
 
   return (
     <div>
-      {!isLoading && tracks.length > 0 && (
+      {isLoading ? (
+        <p>...Loading</p>
+      ) : tracks.length > 0 ? (
         <>
           <h1 className="Playlist-Header">Here's your Moody playlist!</h1>
           <SpotifyPlayer tracks={tracks} setTracks={setTracks} />
           <h2 className="Playlist-h2">Here are some recommended playlists!</h2>
           <RecommendedPlaylists />
         </>
-      )}
-      {!isLoading && tracks.length === 0 && (
+      ) : (
         <div>
           <NoTracksFound />
           <RecommendedPlaylists />
@@ -104,6 +106,24 @@ const Playlist = ({
       )}
     </div>
   );
+
+  // return (
+  //   <div>
+  //     {!isLoading && tracks.length > 0 ? (
+  //       <>
+  //         <h1 className="Playlist-Header">Here's your Moody playlist!</h1>
+  //         <SpotifyPlayer tracks={tracks} setTracks={setTracks} />
+  //         <h2 className="Playlist-h2">Here are some recommended playlists!</h2>
+  //         <RecommendedPlaylists />
+  //       </>
+  //     ) : (
+  //       <div>
+  //         <NoTracksFound />
+  //         <RecommendedPlaylists />
+  //       </div>
+  //     )}
+  //   </div>
+  // );
 };
 
 export default Playlist;
