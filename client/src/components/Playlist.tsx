@@ -2,6 +2,7 @@ import axios from "axios";
 import { useCallback, useEffect, useRef, useState } from "react";
 import SpotifyPlayer from "./SpotifyPlayer";
 import RecommendedPlaylists from "./RecommendedPlaylists";
+import { NoTracksFound } from "./NoTracksFound";
 
 const Playlist = ({
   genres,
@@ -63,39 +64,12 @@ const Playlist = ({
         },
       })
       .then((tracks) => setTracks(tracks.data.playlist))
-      .catch((error) => console.log(error))
+      .catch((error) => {
+        console.error(error);
+        setIsLoading(false);
+      })
       .finally(() => setIsLoading(false));
   }, [bpmRange, genres, valence]);
-
-  const createPlaylistId = async () => {
-    const data = {
-      playlistName,
-      user_id: userId,
-    };
-    try {
-      await axios
-        .post("http://localhost:80/create_playlist_id", data)
-        .then((result) => setPlaylistToken(result.data.id))
-        .catch((error) => console.log(error));
-    } catch (error) {
-      console.log(error, "error here");
-    }
-  };
-
-  const createPlaylist = async () => {
-    try {
-      const data: Record<string, any> = {
-        playlist_id: playlistToken,
-        uris: tracks,
-      };
-      await axios
-        .post("http://localhost:80/create_playlist", data)
-        .then((result) => console.log(result, "result"))
-        .catch((error) => console.log(error, "error"));
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   useEffect(() => {
     (async () => {
@@ -107,20 +81,14 @@ const Playlist = ({
   }, [moodValue]);
 
   useEffect(() => {
-    if (bpmRange.length && valence !== null) {
+    if (bpmRange.length > 0 && valence !== null) {
       getPlaylists();
     }
   }, [valence, bpmRange, getPlaylists]);
 
-  useEffect(() => {
-    if (playlistToken !== null && tracks.length) {
-      createPlaylist();
-    }
-  }, [playlistToken, tracks]);
-
   return (
     <div>
-      {!isLoading && (
+      {!isLoading && tracks.length > 0 && (
         <>
           <h1 className="Playlist-Header">Here's your Moody playlist!</h1>
           <SpotifyPlayer tracks={tracks} setTracks={setTracks} />
@@ -130,14 +98,7 @@ const Playlist = ({
       )}
       {!isLoading && tracks.length === 0 && (
         <div>
-          <div className="No-Tracks">
-            We couldn't find any songs in genres that fit your mood 😖
-            <br />
-            Please refresh your browser and try again ♻️,
-            <br />
-            Here are some recommended playlists you can check out, in the
-            meantime!
-          </div>
+          <NoTracksFound />
           <RecommendedPlaylists />
         </div>
       )}

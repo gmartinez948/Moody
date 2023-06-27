@@ -9,6 +9,10 @@ import {
   useWebPlaybackSDKReady,
 } from "react-spotify-web-playback-sdk";
 import { ErrorPage } from "./ErrorPage";
+import { NoTracksFound } from "./NoTracksFound";
+import { getDevices } from "../hooks/getDevices";
+import { fetchTrack } from "../hooks/fetchTrack";
+import { Devices } from "./Devices";
 
 const SpotifyPlayer = ({ tracks, setTracks }: any) => {
   const [token, setToken] = useState<string | null>(null);
@@ -46,8 +50,7 @@ const SpotifyPlayer = ({ tracks, setTracks }: any) => {
 
     const handlePlayPauseClicked = (index: number) => {
       if (playClicked && tracks[index] === currentSong) {
-        player.pause();
-        setPlayClicked(false);
+        player.pause().then(() => setPlayClicked(false));
       } else {
         playTrack(index);
         setPlayClicked(true);
@@ -67,30 +70,44 @@ const SpotifyPlayer = ({ tracks, setTracks }: any) => {
     const webPlaybackSDKReady = useWebPlaybackSDKReady();
     const device = usePlayerDevice();
     const [currentSong, setCurrentSong] = useState<any>(tracks[0]);
+    const [devices, setDevices] = useState([]);
+
+    useEffect(() => {
+      getDevices(token, setDevices);
+    }, []);
+
+    const checkForDevices = () => {
+      if (devices.length > 0 && device === null) {
+        return <Devices devices={devices} token={token} />;
+      }
+      if (!devices.length) {
+        return <ErrorPage />;
+      }
+    };
+
+    useEffect(() => {
+      checkForDevices();
+    }, [devices]);
+
+    console.log(devices);
 
     const playTrack = (index = 0) => {
-      // says when there is no internet connection, null is returned.  WEIRD
-      if (device === null) return <ErrorPage />;
+      console.log(device, "device");
       if (tracks[index] === undefined) {
         return;
       }
       const mappedUris = tracks.map((track: any) => track.uri);
-      fetch(
-        `https://api.spotify.com/v1/me/player/play?device_id=${device.device_id}`,
-        {
-          method: "PUT",
-          body: JSON.stringify({ uris: [mappedUris[index]] }),
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      // setting the current song so I can apply styles to the current song later.
+      if (token && device) {
+        fetchTrack(mappedUris, index, token, device);
+      }
       setCurrentSong(tracks[index]);
     };
 
-    if (!webPlaybackSDKReady || !tracks.length) return <CircularProgress />;
+    if (!tracks.length) {
+      return <NoTracksFound />;
+    }
+
+    if (!webPlaybackSDKReady) return <CircularProgress />;
 
     const transformArtistNames = (album: any) => {
       return album.artists.map((artist: any) => artist.name).join(", ");
@@ -100,7 +117,10 @@ const SpotifyPlayer = ({ tracks, setTracks }: any) => {
       <div>
         {tracks.map((track: any, index: number) => {
           return (
-            <div className={track === currentSong ? "Current-Song" : "Song"}>
+            <div
+              className={track === currentSong ? "Current-Song" : "Song"}
+              key={index}
+            >
               <img
                 src={track.album.images[0].url}
                 width="75"
@@ -132,7 +152,7 @@ const SpotifyPlayer = ({ tracks, setTracks }: any) => {
       initialVolume={0.5}
       connectOnInitialized={true}
     >
-      <div className="Song-Card-Container">
+      <div className={tracks.length && "Song-Card-Container"}>
         <SongDetails tracks={tracks} setTracks={setTracks} />
       </div>
     </WebPlaybackSDK>

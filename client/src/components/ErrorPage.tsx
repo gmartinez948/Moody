@@ -2,16 +2,13 @@ export const ErrorPage = () => {
   return (
     <div>
       <h1>Whoops! There has been an error</h1>
-      <h2>There are a few ways to fix this issue</h2>
-      <ul>
+      <h2>There are a couple of ways to fix this issue</h2>
+      <ol style={{ listStyleType: "number" }}>
         <li>
-          Check that your Spotify app is not running. <br />
-          If it is, either quit it or make sure the song que is empty and try
-          again
+          Check that your Spotify app is running on any of your devices. <br />
         </li>
         <li>Refresh the app and try again</li>
-        <li>Accept that I'm a bad programmer</li>
-      </ul>
+      </ol>
     </div>
   );
 };

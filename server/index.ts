@@ -130,7 +130,7 @@ app.get("/recs/", (req, res) => {
         console.log("Error retrieving recommendations:", response.statusText);
       }
     } catch (error) {
-      console.log("Error:", error.message);
+      res.json({ error });
     }
   }
 
