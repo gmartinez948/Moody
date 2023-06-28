@@ -18,9 +18,6 @@ const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI;
 
-global.spotify_access_token = "";
-global.spotify_refresh_token = "";
-
 function generateRandomString(length) {
   let text = "";
   let possible =
@@ -59,29 +56,31 @@ app.get("/login", (req, res) => {
   );
 });
 
-const refreshToken = () => {
-  const dataParams = new URLSearchParams();
-  dataParams.append("grant_type", "refresh_token");
-  dataParams.append("refresh_token", global.spotify_refresh_token);
-  axios({
-    method: "POST",
-    url: "https://accounts.spotify.com/api/token",
-    headers: {
-      "content-type": "application/x-www-form-urlencoded",
-      Authorization: `Basic ${Buffer.from(
-        `${CLIENT_ID}:${CLIENT_SECRET}`
-      ).toString("base64")}`,
-    },
-    data: dataParams.toString(),
-  })
-    .then(
-      (response) =>
-        (global.spotify_access_token = JSON.stringify(
-          response.data.access_token
-        ))
-    )
-    .catch((err) => console.error(err));
-};
+app.post("/refresh_token", () => {
+  const refreshToken = () => {
+    const dataParams = new URLSearchParams();
+    dataParams.append("grant_type", "refresh_token");
+    dataParams.append("refresh_token", global.spotify_refresh_token);
+    axios({
+      method: "POST",
+      url: "https://accounts.spotify.com/api/token",
+      headers: {
+        "content-type": "application/x-www-form-urlencoded",
+        Authorization: `Basic ${Buffer.from(
+          `${CLIENT_ID}:${CLIENT_SECRET}`
+        ).toString("base64")}`,
+      },
+      data: dataParams.toString(),
+    })
+      .then((response) =>
+        fs.replace(
+          "access_token.json",
+          JSON.stringify(response.data.access_token)
+        )
+      )
+      .catch((err) => console.error(err));
+  };
+});
 
 app.get("/callback/", (req, res) => {
   var code = req.query.code;
@@ -101,25 +100,37 @@ app.get("/callback/", (req, res) => {
     },
   })
     .then((response) => {
-      const expiresAt = Date.now() + response.data.expires_in * 1000;
-      const isTokenExpired = expiresAt < Date.now();
       if (response.status === 200) {
-        if (isTokenExpired) {
-          refreshToken();
-        } else {
-          global.spotify_access_token = JSON.stringify(
-            response.data.access_token
-          );
-          global.spotify_refresh_token = response.data.refresh_token;
-        }
+        fs.writeFileSync(
+          "access_token.json",
+          JSON.stringify(response.data.access_token)
+        );
+        fs.writeFileSync(
+          "refresh_token.json",
+          JSON.stringify(response.data.refresh_token)
+        );
         res.redirect("http://localhost:3000/moody/");
       }
     })
     .catch((error) => res.json({ error }));
 });
 
+const readFile = (filePath) => {
+  return new Promise((resolve, reject) => {
+    fs.readFile(filePath, "utf8", (err, data) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      if (typeof data === "string") {
+        resolve(data.split('"').join(""));
+      }
+    });
+  });
+};
+
 app.get("/auth_token/", (req, res) => {
-  return global.spotify_access_token;
+  return readFile("access_token.json").then((token) => res.json({ token }));
 });
 
 app.get("/recs/", (req, res) => {
@@ -127,12 +138,13 @@ app.get("/recs/", (req, res) => {
 
   async function recommendPlaylistByBPM() {
     try {
+      const access_token = await readFile("access_token.json");
       // template for sad songs; testing out
       const response = await axios.get(
         `https://api.spotify.com/v1/recommendations?seed_genres=${seed_genres}&limit=20&target_valence=${max_valence}&seed_tracks=${"3UCp4g1EWXVKcrZsW0aGGD,0FUT0sHE6An4sKU4W6LH1c"}&target_energy=${"0.2"}&target_danceability=${"0.2"}&target_popularity=${"10"}`,
         {
           headers: {
-            Authorization: `Bearer ${global.spotify_access_token}`,
+            Authorization: `Bearer ${access_token}`,
           },
         }
       );
@@ -148,7 +160,7 @@ app.get("/recs/", (req, res) => {
         console.log("Error retrieving recommendations:", response.statusText);
       }
     } catch (error) {
-      res.json({ error });
+      console.log("Error:", error.message);
     }
   }
 
@@ -159,8 +171,9 @@ app.post("/create_playlist_id", (req, res) => {
   const createPlaylistId = async () => {
     try {
       const { playlistName, user_id } = req.body;
+      const access_token = await readFile("access_token.json");
       const headers = {
-        Authorization: `Bearer ${global.spotify_access_token}`,
+        Authorization: `Bearer ${access_token}`,
         "Content-Type": "application/json",
       };
       const playlistData = {
@@ -186,8 +199,9 @@ app.post("/create_playlist", (req, res) => {
     try {
       const { playlist_id, uris } = req.body;
       const mappedUris = uris.map((track: any) => track.uri);
+      const access_token = await readFile("access_token.json");
       const headers = {
-        Authorization: `Bearer ${global.spotify_access_token}`,
+        Authorization: `Bearer ${access_token}`,
         "Content-Type": "application/json",
       };
       const response = axios.post(
