@@ -5,24 +5,20 @@ import { useState } from "react";
 
 const marks = [
   {
-    value: 1,
+    value: 25,
     label: "Sad",
   },
   {
-    value: 25,
+    value: 50,
     label: "Calm",
   },
   {
-    value: 50,
+    value: 75,
     label: "Happy",
   },
   {
-    value: 75,
-    label: "Energetic",
-  },
-  {
     value: 100,
-    label: "Motivated",
+    label: "Energetic",
   },
 ];
 
@@ -43,7 +39,7 @@ const theme = createTheme({
           color: "white",
         },
         root: {
-          width: "50%",
+          width: "75%",
         },
       },
     },
@@ -69,7 +65,11 @@ const Moods = ({
   const handleSliderChange = (event: Event, newValue: number | number[]) => {
     event.preventDefault();
     if (typeof newValue === "number") {
-      setSliderValue(newValue);
+      if (newValue === 125) {
+        setSliderValue(100);
+      } else {
+        setSliderValue(newValue);
+      }
     }
   };
 
@@ -81,13 +81,13 @@ const Moods = ({
           <ThemeProvider theme={theme}>
             <Slider
               aria-label="Custom marks"
-              defaultValue={1}
+              defaultValue={0}
               getAriaValueText={valuetext}
               step={25}
               valueLabelDisplay="off"
               marks={marks}
-              min={1}
-              max={100}
+              min={0}
+              max={125}
               onChange={handleSliderChange}
             />
           </ThemeProvider>
