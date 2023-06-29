@@ -1,4 +1,3 @@
-require("dotenv").config();
 const axios = require("axios");
 const express = require("express");
 const querystring = require("querystring");
@@ -11,6 +10,7 @@ app.use(express.json());
 const fs = require("fs");
 const bodyParser = require("body-parser");
 app.use(bodyParser.json());
+require("dotenv").config();
 
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
