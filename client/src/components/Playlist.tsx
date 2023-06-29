@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import SpotifyPlayer from "./SpotifyPlayer";
 import RecommendedPlaylists from "./RecommendedPlaylists";
 import { NoTracksFound } from "./NoTracksFound";
+import { CircularProgress } from "@mui/material";
 
 const Playlist = ({
   genres,
@@ -90,14 +91,13 @@ const Playlist = ({
   return (
     <div>
       {isLoading ? (
-        <p>...Loading</p>
+        <CircularProgress />
       ) : tracks.length > 0 ? (
-        <>
-          <h1 className="Playlist-Header">Here's your Moody playlist!</h1>
+        <div>
           <SpotifyPlayer tracks={tracks} setTracks={setTracks} />
           <h2 className="Playlist-h2">Here are some recommended playlists!</h2>
           <RecommendedPlaylists />
-        </>
+        </div>
       ) : (
         <div>
           <NoTracksFound />

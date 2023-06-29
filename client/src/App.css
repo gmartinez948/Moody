@@ -158,9 +158,9 @@ body {
   justify-content: center;
   flex-direction: column;
   align-items: center;
-  height: 100vh;
   width: 800px;
   gap: 50px;
+  padding-top: 50px;
 }
 
 .Mood-Slider-Box > h1 {

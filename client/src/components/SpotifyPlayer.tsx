@@ -1,4 +1,10 @@
-import { SetStateAction, useCallback, useEffect, useState } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { getAuthToken } from "../hooks/getAuthToken";
 import "../App.css";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -75,7 +81,13 @@ const SpotifyPlayer = ({ tracks, setTracks }: any) => {
     );
   };
 
-  const SongDetails = ({ tracks, setTracks }: any) => {
+  const SongDetails = ({
+    tracks,
+    setTracks,
+  }: {
+    tracks: Array<Record<string, any>>;
+    setTracks: Dispatch<SetStateAction<any>>;
+  }) => {
     const webPlaybackSDKReady = useWebPlaybackSDKReady();
     const device = usePlayerDevice();
     const [currentSong, setCurrentSong] = useState<any>(tracks[0]);
