@@ -8,11 +8,10 @@ import {
   useSpotifyPlayer,
   useWebPlaybackSDKReady,
 } from "react-spotify-web-playback-sdk";
-import { ErrorPage } from "./ErrorPage";
 import { NoTracksFound } from "./NoTracksFound";
-import { getDevices } from "../hooks/getDevices";
 import { fetchTrack } from "../hooks/fetchTrack";
-import { Devices } from "./Devices";
+import Button from "@mui/material/Button";
+import Tooltip from "@mui/material/Tooltip";
 
 const SpotifyPlayer = ({ tracks, setTracks }: any) => {
   const [token, setToken] = useState<string | null>(null);
@@ -45,6 +44,7 @@ const SpotifyPlayer = ({ tracks, setTracks }: any) => {
   }) => {
     const player = useSpotifyPlayer();
     const [playClicked, setPlayClicked] = useState(false);
+    const device = usePlayerDevice();
 
     if (player === null) return null;
 
@@ -59,9 +59,17 @@ const SpotifyPlayer = ({ tracks, setTracks }: any) => {
 
     return (
       <div className="Current-Song-Buttons">
-        <button onClick={() => handlePlayPauseClicked(index)}>
-          {currentSong !== tracks[index] || !playClicked ? "Play" : "Pause"}
-        </button>
+        {device === null ? (
+          <Tooltip title="Playback is unavailable">
+            <span className="Disabled-Button">
+              <Button disabled>Play</Button>
+            </span>
+          </Tooltip>
+        ) : (
+          <button onClick={() => handlePlayPauseClicked(index)}>
+            {currentSong !== tracks[index] || !playClicked ? "Play" : "Pause"}
+          </button>
+        )}
       </div>
     );
   };
@@ -70,31 +78,13 @@ const SpotifyPlayer = ({ tracks, setTracks }: any) => {
     const webPlaybackSDKReady = useWebPlaybackSDKReady();
     const device = usePlayerDevice();
     const [currentSong, setCurrentSong] = useState<any>(tracks[0]);
-    const [devices, setDevices] = useState([]);
+    const player = useSpotifyPlayer();
 
     useEffect(() => {
-      if (token) {
-        getDevices(token, setDevices);
-      }
+      player?.connect();
     }, []);
 
-    const checkForDevices = () => {
-      if (devices.length > 0 && device === null) {
-        return <Devices devices={devices} token={token} />;
-      }
-      if (!devices.length) {
-        return <ErrorPage />;
-      }
-    };
-
-    useEffect(() => {
-      checkForDevices();
-    }, [devices]);
-
-    console.log(devices);
-
     const playTrack = (index = 0) => {
-      console.log(device, "device");
       if (tracks[index] === undefined) {
         return;
       }
@@ -111,7 +101,7 @@ const SpotifyPlayer = ({ tracks, setTracks }: any) => {
 
     if (!webPlaybackSDKReady) return <CircularProgress />;
 
-    const transformArtistNames = (album: any) => {
+    const transformArtistNames: any = (album: any) => {
       return album.artists.map((artist: any) => artist.name).join(", ");
     };
 
@@ -129,8 +119,12 @@ const SpotifyPlayer = ({ tracks, setTracks }: any) => {
                 alt={track.name}
               />
               <div className="Current-Text">
-                <p>{track.name}</p>
-                <p>{transformArtistNames(track.album)}</p>
+                <p style={{ color: track === currentSong ? "black" : "white" }}>
+                  {track.name}
+                </p>
+                <p style={{ color: track === currentSong ? "black" : "white" }}>
+                  {transformArtistNames(track.album)}
+                </p>
                 <div className="Current-Song-Buttons">
                   <PlayTracks
                     index={index}

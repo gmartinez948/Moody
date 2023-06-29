@@ -1,3 +1,4 @@
+import { Dispatch, SetStateAction } from "react";
 import { setSpotifyDevice } from "../hooks/getDevices";
 
 export interface DevicesProps {
@@ -13,21 +14,25 @@ export interface DevicesProps {
 export const Devices = ({
   devices,
   token,
+  setDeviceId,
 }: {
   devices: DevicesProps[];
   token: string | null;
+  setDeviceId: Dispatch<SetStateAction<string>>;
 }) => {
   return (
     <div>
       <h1>Choose a device to play music on</h1>
-      <p>Upon choosing, the page will reload and you can try again</p>
-      {devices.map((device: any) => {
+      {devices.map((device: DevicesProps) => {
         return (
           <button
             key={device.id}
             onClick={() => {
               if (token) {
-                setSpotifyDevice(device.id, token);
+                // setSpotifyDevice(device.id, token).then(() =>
+                //   setDeviceId(device.id)
+                // );
+                setDeviceId(device.id);
               }
             }}
           >

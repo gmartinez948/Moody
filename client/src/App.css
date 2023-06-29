@@ -231,10 +231,26 @@ body {
   color: black;
 }
 
-.Current-Song-Buttons > button {
-  margin-right: 20px;
+.Disabled-Button {
+  padding: 5px;
+  margin-top: 10px;
   border: none;
-  border-radius: 10%;
+  border-radius: 15%;
+  background-color: silver;
+}
+
+.Song-Text {
+  color: white;
+}
+
+.Current-Song-Buttons > button {
+  padding: 5px;
+  margin-right: 20px;
+  margin-top: 10px;
+  border-color: white;
+  color: white;
+  border-radius: 15%;
+  background-color: black;
 }
 
 .Song-Card-Container::-webkit-scrollbar {
@@ -277,7 +293,8 @@ body {
 }
 
 .Recommended-Playlist-Card > button {
-  padding: 3%;
+  margin-top: 10px;
+  padding: 5%;
   align-self: center;
   background-color: greenyellow;
   border: none;

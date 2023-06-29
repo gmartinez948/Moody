@@ -21,8 +21,8 @@ const playlists: Readonly<Array<Record<string, any>>> = [
 const RecommendedPlaylists = () => {
   return (
     <div className="Recommended-Playlist-Grid-Container">
-      {playlists.map((playlist) => (
-        <div className="Recommended-Playlist-Card">
+      {playlists.map((playlist, index) => (
+        <div className="Recommended-Playlist-Card" key={index}>
           <h2>{playlist.name}</h2>
           <img src={playlist.image} width={150} alt={playlist.name} />
           <button onClick={() => window.open(`${playlist.url}`)}>

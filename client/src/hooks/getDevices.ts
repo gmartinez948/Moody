@@ -16,7 +16,12 @@ export const getDevices = async (
 
     if (response.ok) {
       const data = await response.json();
-      const devices = data.devices;
+      const devices = data.devices.filter(
+        (obj: any, index: number, self: any) => {
+          return index === self.findIndex((o: any) => o.name === obj.name);
+        }
+      );
+
       setDevices(devices);
     } else {
       // Bad or expired token. This can happen if the user revoked a token or the access token has expired. You should re-authenticate the user.
@@ -36,11 +41,11 @@ export const setSpotifyDevice = async (id: string, token: string) => {
     },
     body: JSON.stringify({
       device_ids: [id],
-      play: false,
+      play: true,
     }),
   });
-  if (deviceResponse.ok) {
-    window.location.reload();
+  if (deviceResponse.status === 204) {
+    console.log("successfully transferred playback");
   } else {
     console.error("Failed to transfer playback.");
   }

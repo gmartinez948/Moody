@@ -38,6 +38,7 @@ app.get("/login", (req, res) => {
     playlist-modify-public \
                user-read-email \
                user-read-playback-state \
+               user-modify-playback-state \
                user-read-private";
 
   var state = generateRandomString(16);
