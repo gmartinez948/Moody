@@ -27,9 +27,10 @@ const SpotifyPlayer = ({ tracks, setTracks }: any) => {
     authToken();
   }, []);
 
-  const getOAuthToken = useCallback((callback: any) => callback(token), [
-    token,
-  ]);
+  const getOAuthToken = useCallback(
+    (callback: (arg0: string) => any) => callback(token as string),
+    [token]
+  );
 
   const PlayTracks = ({
     index,
