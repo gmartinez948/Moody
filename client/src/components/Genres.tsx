@@ -4,6 +4,8 @@ import axios from "axios";
 import "../App.css";
 import { motion } from "framer-motion";
 
+axios.defaults.withCredentials = true;
+
 const genres: string[] = [
   "Pop",
   "Hip-Hop",

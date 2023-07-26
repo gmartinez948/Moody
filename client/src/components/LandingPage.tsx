@@ -1,6 +1,8 @@
+import { createClient } from "@supabase/supabase-js";
 import { motion, useAnimation } from "framer-motion";
 import "../App.css";
 import { useEffect } from "react";
+
 const LandingPage = () => {
   const signInSpotify = () => {
     window.location.replace("http://localhost:80/login");
