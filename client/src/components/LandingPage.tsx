@@ -5,7 +5,7 @@ import { useEffect } from "react";
 
 const LandingPage = () => {
   const signInSpotify = () => {
-    window.location.replace("http://moody-final-deploy.vercel.app/login");
+    window.location.replace("http://localhost:80/login");
   };
 
   const controls = useAnimation();

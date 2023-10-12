@@ -21,16 +21,12 @@ const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI;
 const SESSION_SECRET = process.env.SESSION_SECRET;
 
-const domainUrl = "https://moody-final-deploy-gmartinez948.vercel.app";
-
 app.use(function (req, res, next) {
-  res.header(
-    "Access-Control-Allow-Origin",
-    "https://moody-final-deploy-gmartinez948.vercel.app"
-  );
+  res.header("Access-Control-Allow-Origin", "http://localhost:3000");
   res.header("Access-Control-Allow-Credentials", true);
   next();
 });
+
 app.use(
   session({
     secret: SESSION_SECRET,
@@ -46,7 +42,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.get(
-  "https://moody-final-deploy-gmartinez948.vercel.app/login",
+  "/login",
   passport.authenticate("spotify", {
     scope: [
       "streaming",
@@ -62,7 +58,7 @@ app.get(
 );
 
 app.get(
-  "https://moody-final-deploy-gmartinez948.vercel.app/auth/callback/",
+  "/auth/callback/",
   passport.authenticate("spotify", { failureRedirect: "/login" }),
   (req, res) => {
     res.redirect("http://localhost:3000/moody/");
