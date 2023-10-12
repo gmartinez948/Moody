@@ -135,24 +135,6 @@ const Playlist = ({
       )}
     </div>
   );
-
-  // return (
-  //   <div>
-  //     {!isLoading && tracks.length > 0 ? (
-  //       <>
-  //         <h1 className="Playlist-Header">Here's your Moody playlist!</h1>
-  //         <SpotifyPlayer tracks={tracks} setTracks={setTracks} />
-  //         <h2 className="Playlist-h2">Here are some recommended playlists!</h2>
-  //         <RecommendedPlaylists />
-  //       </>
-  //     ) : (
-  //       <div>
-  //         <NoTracksFound />
-  //         <RecommendedPlaylists />
-  //       </div>
-  //     )}
-  //   </div>
-  // );
 };
 
 export default Playlist;

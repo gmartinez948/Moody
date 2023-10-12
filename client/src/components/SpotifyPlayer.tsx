@@ -18,24 +18,26 @@ import { NoTracksFound } from "./NoTracksFound";
 import { fetchTrack } from "../hooks/fetchTrack";
 import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
+import axios from "axios";
 
 const SpotifyPlayer = ({ tracks, setTracks }: any) => {
   const [token, setToken] = useState<string | null>(null);
   useEffect(() => {
-    const authToken = async () => {
-      try {
-        const token = await getAuthToken();
-        setToken(token as string);
-      } catch (error) {
-        console.log(error);
-      }
+    const getAuthToken = async () => {
+      return new Promise((resolve) => {
+        resolve(
+          axios.get("http://localhost:80/auth_token").then((response) => {
+            setToken(response.data.token);
+          })
+        );
+      });
     };
-    authToken();
+    getAuthToken();
   }, []);
 
   const getOAuthToken = useCallback(
     (callback: (arg0: string) => any) => callback(token as string),
-    [token]
+    []
   );
 
   const PlayTracks = ({
@@ -93,8 +95,14 @@ const SpotifyPlayer = ({ tracks, setTracks }: any) => {
     const [currentSong, setCurrentSong] = useState<any>(tracks[0]);
     const player = useSpotifyPlayer();
 
+    console.log(player)
+
     useEffect(() => {
-      player?.connect();
+      player?.connect().then(success => {
+        if (success) {
+          console.log('The Web Playback SDK successfully connected to Spotify!');
+        }
+      });
     }, []);
 
     const playTrack = (index = 0) => {

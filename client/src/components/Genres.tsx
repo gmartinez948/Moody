@@ -66,19 +66,13 @@ const Genres = () => {
     });
   };
 
-  const getUserInfo = useCallback(() => {
-    return new Promise((resolve) => {
-      resolve(
-        axios
-          .get("https://api.spotify.com/v1/me", {
-            headers: { Authorization: `Bearer ${token}` },
-          })
-          .then((userInfo) => {
-            setUserId(userInfo.data.id);
-          })
-          .catch((error) => console.log(error.message))
-      );
-    });
+  const getUserInfo = useCallback(async () => {
+    try {
+      const response = await axios.get("http://localhost:80/userInfo");
+      setUserId(response.data.id);
+    } catch (error) {
+      console.error(error);
+    }
   }, [token]);
 
   useEffect(() => {

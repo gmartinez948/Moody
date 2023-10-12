@@ -7,7 +7,6 @@ const app = express();
 const cors = require("cors");
 const passport = require("passport");
 require("./auth/auth.js");
-const { createClient } = require("@supabase/supabase-js");
 const session = require("express-session");
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
@@ -41,6 +40,8 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+const database = require("./auth/auth.js");
+
 app.get(
   "/login",
   passport.authenticate("spotify", {
@@ -65,10 +66,36 @@ app.get(
   }
 );
 
-app.get("/auth_token/", (req, res) => {
+app.get("/auth_token/", async (req, res) => {
   if (req.user) {
-    return res.json({ token: req.user.accessToken });
+    const { data, error } = await database.supabase
+      .from("User")
+      .select("accessToken")
+      .eq("spotifyId", req.user[0].spotifyId);
+    return res.json({ token: data[0].accessToken });
   }
+});
+
+app.get("/userInfo", (req, res) => {
+  const getUserInfo = async () => {
+    try {
+      const { data, error } = await database.supabase
+        .from("User")
+        .select("accessToken")
+        .eq("spotifyId", req.user[0].spotifyId);
+
+      const response = await axios.get("https://api.spotify.com/v1/me", {
+        headers: {
+          Authorization: `Bearer ${data[0].accessToken}`,
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      });
+      res.json(response.data.id);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  getUserInfo();
 });
 
 app.get("/recs/", (req, res) => {
@@ -85,12 +112,16 @@ app.get("/recs/", (req, res) => {
       if (!req.user) {
         res.redirect("/login");
       }
-      const access_token = req.user.accessToken;
+      const { data, error } = await database.supabase
+        .from("User")
+        .select("accessToken")
+        .eq("spotifyId", req.user[0].spotifyId);
+
       const response = await axios.get(
         `https://api.spotify.com/v1/recommendations?seed_genres=${seed_genres}&limit=20&target_valence=${target_valence}&target_tempo=${target_tempo}&target_energy=${target_energy}&target_danceability=${target_danceability}`,
         {
           headers: {
-            Authorization: `Bearer ${access_token}`,
+            Authorization: `Bearer ${data[0].accessToken}`,
           },
         }
       );
